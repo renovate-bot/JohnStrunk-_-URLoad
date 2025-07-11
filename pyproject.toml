@@ -1,0 +1,16 @@
+[project]
+name = "urload"
+version = "0.1.0"
+description = "An interactive tool for downloading URLs"
+authors = [
+    { name = "John Strunk", email = "john.strunk@gmail.com" }
+]
+requires-python = ">=3.13.5"
+dependencies = []
+
+[project.scripts]
+urload = "urload:main"
+
+[build-system]
+requires = ["uv_build>=0.7.20,<0.8"]
+build-backend = "uv_build"

@@ -4,11 +4,12 @@
 	// https://github.com/devcontainers/templates/tree/main/src/debian
 	// Other base images: https://github.com/devcontainers/images
 	"name": "Debian",
-	"image": "mcr.microsoft.com/devcontainers/base:bookworm@sha256:ce2e9e611939e611b737362c045bb6d3449bb3efb84898525d724aace1737b90",
+	"image": "mcr.microsoft.com/devcontainers/python:3",
 	// Available features: https://containers.dev/features
 	"features": {
 		"ghcr.io/devcontainers/features/node:1.6.3": {},
-		"ghcr.io/devcontainers-extra/features/pre-commit:2.0.18": {}
+		"ghcr.io/devcontainers-extra/features/pre-commit:2.0.18": {},
+		"ghcr.io/jsburckhardt/devcontainer-features/uv:1.0.0": {}
 	},
 	"postCreateCommand": {
 		// Install pre-commit hooks in the background since they can take a
