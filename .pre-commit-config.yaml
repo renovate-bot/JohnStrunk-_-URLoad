@@ -45,10 +45,6 @@ repos:
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.10.0
     hooks:
-      # Lint restructuredText files
-      - id: rst-backticks
-      - id: rst-directive-colons
-      - id: rst-inline-touching-normal
       # Forbid UTF-8 replacement character
       - id: text-unicode-replacement-char
 
@@ -71,12 +67,6 @@ repos:
     rev: "0.7.20"
     hooks:
       - id: uv-lock
-
-  - repo: https://github.com/hadolint/hadolint
-    rev: v2.12.0
-    hooks:
-      # Lint Dockerfiles
-      - id: hadolint
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: "v0.45.0"
