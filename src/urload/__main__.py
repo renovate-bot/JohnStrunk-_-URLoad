@@ -11,6 +11,11 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import InMemoryHistory
 
+from urload.commands.base import Command
+from urload.commands.exit import ExitCommand
+from urload.commands.help import HelpCommand
+from urload.commands.scrape import ScrapeCommand
+
 
 def main() -> None:
     """
@@ -18,8 +23,15 @@ def main() -> None:
 
     Provides a prompt with tab completion and history support.
     """
-    commands: list[str] = ["scrape", "exit", "help"]
-    completer: WordCompleter = WordCompleter(commands, ignore_case=True)
+    # Register commands
+    command_objs: dict[str, Command] = {}
+    command_objs["exit"] = ExitCommand()
+    command_objs["help"] = HelpCommand(command_objs)
+    command_objs["scrape"] = ScrapeCommand()
+
+    completer: WordCompleter = WordCompleter(
+        list(command_objs.keys()), ignore_case=True
+    )
     history: InMemoryHistory = InMemoryHistory()
     session: PromptSession[Any] = PromptSession(completer=completer, history=history)
 
@@ -27,20 +39,20 @@ def main() -> None:
     while True:
         try:
             user_input = session.prompt("URLoad> ")
-            if isinstance(user_input, str):
-                if user_input.strip() == "exit":
-                    print("Goodbye!")
-                    break
-                elif user_input.strip() == "help":
-                    print("Available commands: scrape, help, exit")
-                elif user_input.strip().startswith("scrape"):
-                    print("Scraping not yet implemented.")
-                elif user_input.strip() == "":
-                    continue
-                else:
-                    print(f"Unknown command: {user_input}")
-            else:
+            if not isinstance(user_input, str):
                 print("Invalid input.")
+                continue
+            parts = user_input.strip().split()
+            if not parts:
+                continue
+            cmd, *args = parts
+            if cmd in command_objs:
+                try:
+                    command_objs[cmd].run(args)
+                except SystemExit:
+                    break
+            else:
+                print(f"Unknown command: {cmd}")
         except (KeyboardInterrupt, EOFError):
             print("\nGoodbye!")
             break
