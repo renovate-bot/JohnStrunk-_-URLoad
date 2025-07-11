@@ -1,2 +1,5 @@
-def main() -> None:
-    print("Hello from urload!")
+"""
+URLoad package.
+
+This package provides the interactive CLI for scraping websites.
+"""
