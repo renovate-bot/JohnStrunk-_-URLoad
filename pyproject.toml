@@ -6,21 +6,12 @@ build-backend = "uv_build"
 name = "urload"
 version = "0.1.0"
 description = "An interactive tool for downloading URLs"
-authors = [
-    { name = "John Strunk", email = "john.strunk@gmail.com" }
-]
+authors = [{ name = "John Strunk", email = "john.strunk@gmail.com" }]
 requires-python = ">=3.13.5"
-dependencies = [
-    "prompt-toolkit>=3.0.51",
-]
+dependencies = ["prompt-toolkit>=3.0.51"]
 
 [dependency-groups]
-dev = [
-    "pyright==1.1.402",
-    "pytest==8.4.1",
-    "pytest-cov==6.2.1",
-    "ruff>=0.12.3",
-]
+dev = ["pyright==1.1.402", "pytest==8.4.1", "pytest-cov==6.2.1", "ruff>=0.12.3"]
 
 [project.scripts]
 urload = "urload.__main__:main"
@@ -45,10 +36,10 @@ exclude_lines = [
     # Don't complain about abstract methods, they aren't run:
     "@(abc.)?abstractmethod",
 ]
-omit = ["*_test.py", "build.py"]
+omit = ["tests/**"]
 
 [tool.coverage.run]
-branch = true  # Enable branch coverage
+branch = true    # Enable branch coverage
 source = ["src"] # Source code directories
 
 [tool.pyright]

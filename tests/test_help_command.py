@@ -1,5 +1,7 @@
 """Tests for the HelpCommand."""
 
+from pytest import CaptureFixture
+
 from urload.commands.base import Command
 from urload.commands.help import HelpCommand
 
@@ -15,9 +17,9 @@ class DummyCommand(Command):
         pass
 
 
-def test_help_lists_commands(capsys) -> None:
+def test_help_lists_commands(capsys: CaptureFixture[str]) -> None:
     """Test that help with no args lists all commands."""
-    commands = {"dummy": DummyCommand()}
+    commands: dict[str, Command] = {"dummy": DummyCommand()}
     help_cmd = HelpCommand(commands)
     help_cmd.run([])
     captured = capsys.readouterr()
@@ -25,18 +27,18 @@ def test_help_lists_commands(capsys) -> None:
     assert "Available commands" in captured.out
 
 
-def test_help_specific_command(capsys) -> None:
+def test_help_specific_command(capsys: CaptureFixture[str]) -> None:
     """Test that help with a valid command shows its help text."""
-    commands = {"dummy": DummyCommand()}
+    commands: dict[str, Command] = {"dummy": DummyCommand()}
     help_cmd = HelpCommand(commands)
     help_cmd.run(["dummy"])
     captured = capsys.readouterr()
     assert "Dummy command." in captured.out
 
 
-def test_help_unknown_command(capsys) -> None:
+def test_help_unknown_command(capsys: CaptureFixture[str]) -> None:
     """Test that help with an unknown command shows an error."""
-    commands = {"dummy": DummyCommand()}
+    commands: dict[str, Command] = {"dummy": DummyCommand()}
     help_cmd = HelpCommand(commands)
     help_cmd.run(["notfound"])
     captured = capsys.readouterr()
