@@ -11,6 +11,7 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import InMemoryHistory
 
+from urload.commands.add import AddCommand
 from urload.commands.base import Command
 from urload.commands.exit import ExitCommand
 from urload.commands.help import HelpCommand
@@ -30,6 +31,7 @@ def main() -> None:
     command_objs["exit"] = ExitCommand()
     command_objs["help"] = HelpCommand(command_objs)
     command_objs["scrape"] = ScrapeCommand()
+    command_objs["add"] = AddCommand()
 
     completer: WordCompleter = WordCompleter(
         list(command_objs.keys()), ignore_case=True
