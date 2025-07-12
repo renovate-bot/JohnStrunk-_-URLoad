@@ -3,6 +3,7 @@
 import textwrap
 
 from urload.commands.base import Command
+from urload.url import URL
 
 
 class HelpCommand(Command):
@@ -20,7 +21,7 @@ class HelpCommand(Command):
         """Initialize HelpCommand with a command registry."""
         self.commands = commands
 
-    def run(self, args: list[str]) -> None:
+    def run(self, args: list[str], url_list: list[URL]) -> list[URL]:
         """Show help for all commands or a specific command."""
         if not args:
             print("Available commands:")
@@ -35,3 +36,4 @@ class HelpCommand(Command):
                 print(self.commands[cmd].help())
             else:
                 print(f"No such command: {cmd}")
+        return url_list

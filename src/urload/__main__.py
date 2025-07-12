@@ -15,6 +15,7 @@ from urload.commands.base import Command
 from urload.commands.exit import ExitCommand
 from urload.commands.help import HelpCommand
 from urload.commands.scrape import ScrapeCommand
+from urload.url import URL
 
 
 def main() -> None:
@@ -23,6 +24,7 @@ def main() -> None:
 
     Provides a prompt with tab completion and history support.
     """
+    url_list: list[URL] = []
     # Register commands
     command_objs: dict[str, Command] = {}
     command_objs["exit"] = ExitCommand()
@@ -48,7 +50,7 @@ def main() -> None:
             cmd, *args = parts
             if cmd in command_objs:
                 try:
-                    command_objs[cmd].run(args)
+                    url_list = command_objs[cmd].run(args, url_list)
                 except SystemExit:
                     break
             else:
