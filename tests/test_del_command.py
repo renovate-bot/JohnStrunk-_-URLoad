@@ -75,3 +75,11 @@ def test_del_command_no_args() -> None:
     url_list = [URL("https://a.com")]
     with pytest.raises(Exception):
         cmd.run([], url_list)
+
+
+def test_del_command_non_integer_index() -> None:
+    """Test that a non-integer index raises CommandError."""
+    cmd = DelCommand()
+    url_list = [URL("https://a.com"), URL("https://b.com")]
+    with pytest.raises(CommandError, match="Invalid index."):
+        cmd.run(["foo"], url_list)
