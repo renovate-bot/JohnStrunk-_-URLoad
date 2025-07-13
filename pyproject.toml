@@ -1,16 +1,86 @@
+[build-system]
+requires = ["uv_build>=0.7.20,<0.8"]
+build-backend = "uv_build"
+
 [project]
 name = "urload"
 version = "0.1.0"
 description = "An interactive tool for downloading URLs"
-authors = [
-    { name = "John Strunk", email = "john.strunk@gmail.com" }
-]
+authors = [{ name = "John Strunk", email = "john.strunk@gmail.com" }]
 requires-python = ">=3.13.5"
-dependencies = []
+dependencies = ["prompt-toolkit>=3.0.51"]
+
+[dependency-groups]
+dev = ["pyright==1.1.402", "pytest==8.4.1", "pytest-cov==6.2.1", "ruff>=0.12.3"]
 
 [project.scripts]
-urload = "urload:main"
+urload = "urload.__main__:main"
 
-[build-system]
-requires = ["uv_build>=0.7.20,<0.8"]
-build-backend = "uv_build"
+[tool.coverage.html]
+directory = "htmlcov"
+
+[tool.coverage.report]
+# Regexes for lines to exclude from consideration
+exclude_lines = [
+    # Have to re-enable the standard pragma
+    "pragma: no cover",
+    # Don't complain about missing debug-only code:
+    "def __repr__",
+    "if self.debug",
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise AssertionError",
+    "raise NotImplementedError",
+    # Don't complain if non-runnable code isn't run:
+    "if 0:",
+    "if __name__ == .__main__.:",
+    # Don't complain about abstract methods, they aren't run:
+    "@(abc.)?abstractmethod",
+]
+omit = ["tests/**"]
+
+[tool.coverage.run]
+branch = true    # Enable branch coverage
+source = ["src"] # Source code directories
+
+[tool.pyright]
+# https://microsoft.github.io/pyright/#/configuration
+deprecateTypingAliases = true
+enableReachabilityAnalysis = true
+include = ["."]
+reportUnnecessaryTypeIgnoreComment = true
+typeCheckingMode = "strict"
+useLibraryCodeForTypes = true
+verboseOutput = true
+
+[tool.pytest.ini_options]
+addopts = [
+    "-rA -q",
+    "--doctest-modules",
+    "--ignore=build.py",        # Don't check build.py
+    "--cov=.",
+    "--cov-config=.coveragerc",
+    "--cov-report=html",
+    "--cov-report=term",
+    "--cov-report=xml",
+]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff.lint]
+# https://docs.astral.sh/ruff/rules/
+select = [
+    "D",    # Pydocstyle
+    "E101", # Pycodestyle: mixed spaces and tabs
+    "E4",   # Pycodestyle: Imports
+    "E7",   # Pycodestyle: misc
+    "E9",   # Pycodestyle: error
+    "F",    # Pyflakes
+    "I",    # isort
+    "PL",   # pylint
+    "RUF",  # Ruff-specific
+]
+pydocstyle.convention = "pep257"
+
+[tool.uv.pip]
+universal = true

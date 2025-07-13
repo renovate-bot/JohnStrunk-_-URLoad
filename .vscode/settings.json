@@ -1,0 +1,13 @@
+{
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "github.copilot.chat.agent.terminal.allowList": {
+        "uv run ruff check --fix": true,
+        "uv run ruff format": true,
+        "uv run pyright": true,
+        "uv run pytest": true
+    }
+}
