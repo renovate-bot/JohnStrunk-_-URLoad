@@ -53,7 +53,8 @@ def main() -> None:
     print("Welcome to URLoad! Type 'help' for commands.")
     while True:
         try:
-            user_input = session.prompt("URLoad> ")
+            prompt_str = f"URLoad ({len(url_list)}) > "
+            user_input = session.prompt(prompt_str)
             if not isinstance(user_input, str):
                 print("Invalid input.")
                 continue
