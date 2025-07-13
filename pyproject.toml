@@ -54,7 +54,7 @@ verboseOutput = true
 
 [tool.pytest.ini_options]
 addopts = [
-    "-rA -q",
+    "-q",
     "--doctest-modules",
     "--ignore=build.py",        # Don't check build.py
     "--cov=.",
