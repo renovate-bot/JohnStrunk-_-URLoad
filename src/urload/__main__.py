@@ -15,6 +15,7 @@ from urload.commands.add import AddCommand
 from urload.commands.base import Command
 from urload.commands.exit import ExitCommand
 from urload.commands.help import HelpCommand
+from urload.commands.list import ListCommand
 from urload.commands.scrape import ScrapeCommand
 from urload.url import URL
 
@@ -32,6 +33,7 @@ def main() -> None:
     command_objs["help"] = HelpCommand(command_objs)
     command_objs["scrape"] = ScrapeCommand()
     command_objs["add"] = AddCommand()
+    command_objs["list"] = ListCommand()
 
     completer: WordCompleter = WordCompleter(
         list(command_objs.keys()), ignore_case=True
