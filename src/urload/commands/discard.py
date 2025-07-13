@@ -1,0 +1,31 @@
+"""Implements the 'discard' command for URLoad."""
+
+import re
+import textwrap
+
+from urload.commands.base import Command, CommandError
+from urload.url import URL
+
+
+class DiscardCommand(Command):
+    """Discards URLs matching a regex pattern."""
+
+    name = "discard"
+    description = textwrap.dedent("""
+    discard <regex> - Remove URLs matching the regex pattern.
+
+    This command removes all URLs in the list that match the given regex pattern.
+    """)
+
+    def run(self, args: list[str], url_list: list[URL]) -> list[URL]:
+        """Remove URLs matching the regex pattern."""
+        if not args:
+            raise CommandError("No regex pattern provided.")
+        pattern = args[0]
+        try:
+            regex = re.compile(pattern)
+        except re.error as e:
+            raise CommandError(f"Invalid regex: {e}")
+        kept = [url for url in url_list if not regex.search(url.url)]
+        print(f"Removed {len(url_list) - len(kept)} URLs matching pattern.")
+        return kept

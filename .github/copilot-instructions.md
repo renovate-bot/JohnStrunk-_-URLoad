@@ -18,7 +18,7 @@ An interactive CLI tool for scraping websites.
 
 - Use `pytest` for testing.
 - Tests should be placed in the `tests` directory.
-- After each change:
+- After each change, do the following, in order:
   - Ensure the code is properly formatted with `uv run ruff format`.
   - Run the linter, `uv run ruff check`, and fix any issues it reports.
   - Run the type checker, `uv run pyright`, and fix any issues it reports.
