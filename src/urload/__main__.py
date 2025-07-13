@@ -5,6 +5,7 @@ This module provides the entry point for the URLoad application, an interactive
 command-line tool for scraping websites with tab completion and history support.
 """
 
+import importlib
 from typing import Any
 
 from prompt_toolkit import PromptSession
@@ -27,6 +28,7 @@ def main() -> None:
     Provides a prompt with tab completion and history support.
     """
     url_list: list[URL] = []
+    del_command = importlib.import_module("urload.commands.del")
     # Register commands
     command_objs: dict[str, Command] = {}
     command_objs["exit"] = ExitCommand()
@@ -34,6 +36,7 @@ def main() -> None:
     command_objs["scrape"] = ScrapeCommand()
     command_objs["add"] = AddCommand()
     command_objs["list"] = ListCommand()
+    command_objs["del"] = del_command.DelCommand()
 
     completer: WordCompleter = WordCompleter(
         list(command_objs.keys()), ignore_case=True
