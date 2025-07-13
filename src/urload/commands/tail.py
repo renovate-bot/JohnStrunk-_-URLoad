@@ -24,7 +24,7 @@ class TailCommand(Command):
         try:
             n = int(args[0])
         except ValueError:
-            raise CommandError("Invalid count. Must be a number.")
+            raise CommandError("Invalid count. Must be an integer.")
 
         if n < 0:
             raise CommandError("Count must be non-negative.")

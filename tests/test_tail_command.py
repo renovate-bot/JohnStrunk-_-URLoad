@@ -75,7 +75,7 @@ def test_tail_command_non_integer_arg() -> None:
     """Test that a non-integer argument raises CommandError."""
     cmd = TailCommand()
     url_list = [URL("https://a.com"), URL("https://b.com")]
-    with pytest.raises(CommandError, match="Invalid count. Must be a number."):
+    with pytest.raises(CommandError, match="Invalid count. Must be an integer."):
         cmd.run(["foo"], url_list)
 
 
@@ -91,5 +91,5 @@ def test_tail_command_float_arg() -> None:
     """Test that a float argument raises CommandError."""
     cmd = TailCommand()
     url_list = [URL("https://a.com"), URL("https://b.com")]
-    with pytest.raises(CommandError, match="Invalid count. Must be a number."):
+    with pytest.raises(CommandError, match="Invalid count. Must be an integer."):
         cmd.run(["2.5"], url_list)
