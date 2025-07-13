@@ -21,6 +21,7 @@ from urload.commands.help import HelpCommand
 from urload.commands.keep import KeepCommand
 from urload.commands.list import ListCommand
 from urload.commands.tail import TailCommand
+from urload.commands.uniq import UniqCommand
 from urload.url import URL
 
 
@@ -43,6 +44,7 @@ def main() -> None:
     command_objs["tail"] = TailCommand()
     command_objs["keep"] = KeepCommand()
     command_objs["discard"] = DiscardCommand()
+    command_objs["uniq"] = UniqCommand()
 
     completer: WordCompleter = WordCompleter(
         list(command_objs.keys()), ignore_case=True
