@@ -1,16 +1,9 @@
 """Tests for the DelCommand."""
 
-import importlib
-
 import pytest
 
+from urload.commands.delete import CommandError, DelCommand
 from urload.url import URL
-
-del_command = importlib.import_module("urload.commands.del")
-DelCommand = del_command.DelCommand
-CommandError = (
-    del_command.CommandError if hasattr(del_command, "CommandError") else Exception
-)
 
 
 def test_del_command_single_index(capsys: pytest.CaptureFixture[str]) -> None:
