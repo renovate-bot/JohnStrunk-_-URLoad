@@ -11,7 +11,7 @@ class ExitCommand(Command):
 
     name = "exit"
     description = textwrap.dedent("""
-    Usage: exit - Exit the application.
+    exit - Exit the application.
 
     This command exits the URLoad interactive session.
     """)

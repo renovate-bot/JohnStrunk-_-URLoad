@@ -11,7 +11,7 @@ class AddCommand(Command):
 
     name = "add"
     description = textwrap.dedent("""
-    Usage: add <url> - Add a URL to the list.
+    add <url> - Add a URL to the list.
 
     This command appends the specified URL to the shared URL list.
     """)

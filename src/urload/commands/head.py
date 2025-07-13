@@ -11,7 +11,7 @@ class HeadCommand(Command):
 
     name = "head"
     description = textwrap.dedent("""
-    Usage: head <n> - Keep the first n URLs from the list.
+    head <n> - Keep the first n URLs from the list.
 
     This command keeps only the first n URLs in the list, discarding the rest.
     """)
