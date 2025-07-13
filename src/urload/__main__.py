@@ -14,11 +14,12 @@ from prompt_toolkit.history import InMemoryHistory
 
 from urload.commands.add import AddCommand
 from urload.commands.base import Command
+from urload.commands.discard import DiscardCommand
 from urload.commands.exit import ExitCommand
 from urload.commands.head import HeadCommand
 from urload.commands.help import HelpCommand
+from urload.commands.keep import KeepCommand
 from urload.commands.list import ListCommand
-from urload.commands.scrape import ScrapeCommand
 from urload.commands.tail import TailCommand
 from urload.url import URL
 
@@ -35,12 +36,13 @@ def main() -> None:
     command_objs: dict[str, Command] = {}
     command_objs["exit"] = ExitCommand()
     command_objs["help"] = HelpCommand(command_objs)
-    command_objs["scrape"] = ScrapeCommand()
     command_objs["add"] = AddCommand()
     command_objs["list"] = ListCommand()
     command_objs["del"] = del_command.DelCommand()
     command_objs["head"] = HeadCommand()
     command_objs["tail"] = TailCommand()
+    command_objs["keep"] = KeepCommand()
+    command_objs["discard"] = DiscardCommand()
 
     completer: WordCompleter = WordCompleter(
         list(command_objs.keys()), ignore_case=True
