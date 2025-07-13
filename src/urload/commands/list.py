@@ -11,7 +11,7 @@ class ListCommand(Command):
 
     name = "list"
     description = textwrap.dedent("""
-    Usage: list - List all URLs in the current list.
+    list - List all URLs in the current list.
 
     This command prints each URL in the list, prefixed with its index.
     """)

@@ -11,7 +11,7 @@ class ScrapeCommand(Command):
 
     name = "scrape"
     description = textwrap.dedent("""
-    Usage: scrape <url> - Scrape a website.
+    scrape <url> - Scrape a website.
 
     This command scrapes the content of the specified URL and processes it.
     """)

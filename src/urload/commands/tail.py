@@ -11,7 +11,7 @@ class TailCommand(Command):
 
     name = "tail"
     description = textwrap.dedent("""
-    Usage: tail <n> - Keep the last n URLs from the list.
+    tail <n> - Keep the last n URLs from the list.
 
     This command keeps only the last n URLs in the list, discarding the rest.
     """)
@@ -29,7 +29,4 @@ class TailCommand(Command):
         if n < 0:
             raise CommandError("Count must be non-negative.")
 
-        if n == 0:
-            return []
-
-        return url_list[-n:]
+        return url_list[-n:] if n > 0 else []

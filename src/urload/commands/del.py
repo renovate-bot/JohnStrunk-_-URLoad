@@ -12,7 +12,7 @@ class DelCommand(Command):
 
     name = "del"
     description = textwrap.dedent("""
-    Usage: del <index> | del <start>-<end> - Delete one or more URLs by index or range.
+    del <index> | <start>-<end> - Delete one or more URLs by index or range.
 
     This command removes a single URL by index or a range of URLs from the list.
     """)

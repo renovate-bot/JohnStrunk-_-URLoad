@@ -11,7 +11,7 @@ class HelpCommand(Command):
 
     name = "help"
     description = textwrap.dedent("""
-    Usage: help [command] - Show help for a command.
+    help [command] - Show help for a command.
 
     With no arguments, lists all available commands. With a command name,
     shows detailed help for that command.
@@ -26,9 +26,14 @@ class HelpCommand(Command):
         if not args:
             print("Available commands:")
             for cmd in sorted(self.commands):
-                print(
-                    f"  {cmd}: {self.commands[cmd].description.splitlines()[0].strip()}"
-                )
+                # Print only the first non-empty line of the description (short help)
+                desc_lines = [
+                    line.strip()
+                    for line in self.commands[cmd].description.splitlines()
+                    if line.strip()
+                ]
+                short_help = desc_lines[0] if desc_lines else ""
+                print(f"  {short_help}")
             print("Type 'help <command>' for more info.")
         else:
             cmd = args[0]

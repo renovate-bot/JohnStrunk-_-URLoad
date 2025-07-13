@@ -24,7 +24,7 @@ def test_help_lists_commands(capsys: CaptureFixture[str]) -> None:
     help_cmd = HelpCommand(commands)
     help_cmd.run([], [])
     captured = capsys.readouterr()
-    assert "dummy" in captured.out
+    assert "Dummy command." in captured.out
     assert "Available commands" in captured.out
 
 
