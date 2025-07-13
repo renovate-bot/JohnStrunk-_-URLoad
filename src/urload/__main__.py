@@ -55,6 +55,8 @@ def main() -> None:
                     url_list = command_objs[cmd].run(args, url_list)
                 except SystemExit:
                     break
+                except Exception as e:
+                    print(e)
             else:
                 print(f"Unknown command: {cmd}")
         except (KeyboardInterrupt, EOFError):

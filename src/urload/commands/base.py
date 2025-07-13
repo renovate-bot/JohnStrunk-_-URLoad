@@ -19,3 +19,9 @@ class Command(ABC):
     def help(self) -> str:
         """Return a help string describing the command."""
         return self.description
+
+
+class CommandError(Exception):
+    """Exception raised for errors in URLoad commands."""
+
+    pass

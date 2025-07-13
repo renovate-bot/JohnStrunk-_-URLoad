@@ -2,7 +2,7 @@
 
 import textwrap
 
-from urload.commands.base import Command
+from urload.commands.base import Command, CommandError
 from urload.url import URL
 
 
@@ -19,8 +19,7 @@ class AddCommand(Command):
     def run(self, args: list[str], url_list: list[URL]) -> list[URL]:
         """Append a URL to the list if provided."""
         if not args:
-            print("Error: No URL provided.")
-            return url_list
+            raise CommandError("Error: No URL provided.")
         url = args[0]
         url_obj = URL(url)
         url_list.append(url_obj)
