@@ -30,7 +30,9 @@ def test_img_command_extracts_sources(monkeypatch: pytest.MonkeyPatch) -> None:
         '<html><body><img src="https://a.com/img.png"><img src="/b.png"></body></html>'
     )
 
-    def mock_get(url: str, timeout: int = 10) -> DummyResponse:
+    def mock_get(
+        url: str, timeout: int = 10, headers: dict[str, str] | None = None
+    ) -> DummyResponse:
         return DummyResponse(html)
 
     monkeypatch.setattr("requests.get", mock_get)
@@ -49,7 +51,9 @@ def test_img_command_removes_original(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test that the original URL is not in the result list and Referer is set."""
     html = '<img src="/foo.png">'
 
-    def mock_get(url: str, timeout: int = 10) -> DummyResponse:
+    def mock_get(
+        url: str, timeout: int = 10, headers: dict[str, str] | None = None
+    ) -> DummyResponse:
         return DummyResponse(html)
 
     monkeypatch.setattr("requests.get", mock_get)
@@ -73,7 +77,9 @@ def test_img_command_handles_fetch_error(
 ) -> None:
     """Test that fetch errors are handled and print an error message."""
 
-    def mock_get(url: str, timeout: int = 10) -> DummyResponse:
+    def mock_get(
+        url: str, timeout: int = 10, headers: dict[str, str] | None = None
+    ) -> DummyResponse:
         raise Exception("fail")
 
     monkeypatch.setattr("requests.get", mock_get)
@@ -94,7 +100,9 @@ def test_img_command_relative_sources(monkeypatch: pytest.MonkeyPatch) -> None:
         '<img src="..">'  # Should resolve to parent directory
     )
 
-    def mock_get(url: str, timeout: int = 10) -> DummyResponse:
+    def mock_get(
+        url: str, timeout: int = 10, headers: dict[str, str] | None = None
+    ) -> DummyResponse:
         return DummyResponse(html)
 
     monkeypatch.setattr("requests.get", mock_get)
@@ -112,7 +120,9 @@ def test_img_command_nested_sources(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test that image sources nested within other elements are found."""
     html = '<html><body><ul><li><img src="/nested1.png"></li><li><div><img src="/nested2.png"></div></li></ul></body></html>'
 
-    def mock_get(url: str, timeout: int = 10) -> DummyResponse:
+    def mock_get(
+        url: str, timeout: int = 10, headers: dict[str, str] | None = None
+    ) -> DummyResponse:
         return DummyResponse(html)
 
     monkeypatch.setattr("requests.get", mock_get)
@@ -122,3 +132,21 @@ def test_img_command_nested_sources(monkeypatch: pytest.MonkeyPatch) -> None:
     urls = {u.url for u in result}
     assert "https://nest.com/nested1.png" in urls
     assert "https://nest.com/nested2.png" in urls
+
+
+def test_img_command_passes_headers(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test that the URL's headers are passed to requests.get."""
+    html = '<img src="/foo.png">'
+    called = {}
+
+    def mock_get(
+        url: str, timeout: int = 10, headers: dict[str, str] | None = None
+    ) -> DummyResponse:
+        called["headers"] = headers
+        return DummyResponse(html)
+
+    monkeypatch.setattr("requests.get", mock_get)
+    cmd = ImgCommand()
+    url_list = [URL("https://x.com", headers={"X-Test": "yes", "Referer": "abc"})]
+    cmd.run([], url_list)
+    assert called["headers"] == {"X-Test": "yes", "Referer": "abc"}

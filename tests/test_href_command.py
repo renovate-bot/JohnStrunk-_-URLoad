@@ -30,7 +30,9 @@ def test_href_command_extracts_links(monkeypatch: pytest.MonkeyPatch) -> None:
         """<html><body><a href="https://a.com">A</a><a href="/b">B</a></body></html>"""
     )
 
-    def mock_get(url: str, timeout: int = 10) -> DummyResponse:
+    def mock_get(
+        url: str, timeout: int = 10, headers: dict[str, str] | None = None
+    ) -> DummyResponse:
         return DummyResponse(html)
 
     monkeypatch.setattr("requests.get", mock_get)
@@ -49,7 +51,9 @@ def test_href_command_removes_original(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test that the original URL is not in the result list."""
     html = '<a href="/foo">foo</a>'
 
-    def mock_get(url: str, timeout: int = 10) -> DummyResponse:
+    def mock_get(
+        url: str, timeout: int = 10, headers: dict[str, str] | None = None
+    ) -> DummyResponse:
         return DummyResponse(html)
 
     monkeypatch.setattr("requests.get", mock_get)
@@ -73,7 +77,9 @@ def test_href_command_handles_fetch_error(
 ) -> None:
     """Test that fetch errors are handled and print an error message."""
 
-    def mock_get(url: str, timeout: int = 10) -> DummyResponse:
+    def mock_get(
+        url: str, timeout: int = 10, headers: dict[str, str] | None = None
+    ) -> DummyResponse:
         raise Exception("fail")
 
     monkeypatch.setattr("requests.get", mock_get)
@@ -94,7 +100,9 @@ def test_href_command_relative_links(monkeypatch: pytest.MonkeyPatch) -> None:
         '<a href="..">DotDot</a>'
     )
 
-    def mock_get(url: str, timeout: int = 10) -> DummyResponse:
+    def mock_get(
+        url: str, timeout: int = 10, headers: dict[str, str] | None = None
+    ) -> DummyResponse:
         return DummyResponse(html)
 
     monkeypatch.setattr("requests.get", mock_get)
@@ -114,7 +122,9 @@ def test_href_command_nested_links(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test that links nested within other elements are found."""
     html = """<html><body><ul><li><a href="/nested1">One</a></li><li><div><a href="/nested2">Two</a></div></li></ul></body></html>"""
 
-    def mock_get(url: str, timeout: int = 10) -> DummyResponse:
+    def mock_get(
+        url: str, timeout: int = 10, headers: dict[str, str] | None = None
+    ) -> DummyResponse:
         return DummyResponse(html)
 
     monkeypatch.setattr("requests.get", mock_get)
@@ -124,3 +134,21 @@ def test_href_command_nested_links(monkeypatch: pytest.MonkeyPatch) -> None:
     urls = {u.url for u in result}
     assert "https://nest.com/nested1" in urls
     assert "https://nest.com/nested2" in urls
+
+
+def test_href_command_passes_headers(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test that the URL's headers are passed to requests.get."""
+    html = '<a href="/foo">foo</a>'
+    called = {}
+
+    def mock_get(
+        url: str, timeout: int = 10, headers: dict[str, str] | None = None
+    ) -> DummyResponse:
+        called["headers"] = headers
+        return DummyResponse(html)
+
+    monkeypatch.setattr("requests.get", mock_get)
+    cmd = HrefCommand()
+    url_list = [URL("https://x.com", headers={"X-Test": "yes", "Referer": "abc"})]
+    cmd.run([], url_list)
+    assert called["headers"] == {"X-Test": "yes", "Referer": "abc"}

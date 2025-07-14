@@ -36,7 +36,7 @@ class ImgCommand(Command):
         new_urls: list[URL] = []
         for url in url_list:
             try:
-                resp = requests.get(url.url, timeout=10)
+                resp = requests.get(url.url, timeout=10, headers=url.headers)
                 resp.raise_for_status()
             except Exception as e:
                 print(f"Error fetching {url.url}: {e}")
