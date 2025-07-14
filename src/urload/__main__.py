@@ -15,6 +15,7 @@ from prompt_toolkit.history import InMemoryHistory
 
 from urload.commands.add import AddCommand
 from urload.commands.base import Command
+from urload.commands.clear import ClearCommand
 from urload.commands.delete import DeleteCommand
 from urload.commands.discard import DiscardCommand
 from urload.commands.exit import ExitCommand
@@ -106,6 +107,7 @@ def main() -> None:
     # sync with the command files in src/urload/commands.
     command_objs: dict[str, Command] = {}
     command_objs["add"] = AddCommand()
+    command_objs["clear"] = ClearCommand()
     command_objs["del"] = DeleteCommand()
     command_objs["discard"] = DiscardCommand()
     command_objs["exit"] = ExitCommand()
