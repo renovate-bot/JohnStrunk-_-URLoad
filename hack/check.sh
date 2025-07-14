@@ -2,8 +2,7 @@
 
 set -e -o pipefail
 
-uv run pytest
-uv run pyright
 uv run ruff check --fix
+uv run pyright
 uv run ruff format
 uv run pytest
