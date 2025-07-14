@@ -11,9 +11,11 @@ class ListCommand(Command):
 
     name = "list"
     description = textwrap.dedent("""
-    list - List all URLs in the current list.
+    list [[m]-[n]] - List all URLs in the current list.
 
     This command prints each URL in the list, prefixed with its index.
+    If a range is specified (e.g., 0-4), it prints only those URLs.
+    If no range is specified, it prints all URLs.
     """)
 
     def run(self, args: list[str], url_list: list[URL]) -> list[URL]:
