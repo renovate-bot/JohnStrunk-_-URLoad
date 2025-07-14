@@ -39,41 +39,26 @@ class ListCommand(Command):
         arg = args[0]
         n = len(url_list)
 
-        if "-" not in arg:
-            # Single index
-            try:
-                idx = int(arg)
-            except ValueError:
-                raise CommandError("Invalid index argument.")
-            if 0 <= idx < n:
-                print(f"{idx}: {url_list[idx].url}")
-            else:
-                raise CommandError("Index out of range.")
-            return url_list
-
-        # Handle range arguments
-        if arg == "-":
-            raise CommandError("'-' is not a valid range argument.")
-        if arg.startswith("-"):
-            # -N
-            try:
-                end = int(arg[1:])
-            except ValueError:
-                raise CommandError("Invalid range argument.")
-            print_range(0, end)
-            return url_list
-        if arg.endswith("-"):
-            # N-
-            try:
-                start = int(arg[:-1])
-            except ValueError:
-                raise CommandError("Invalid range argument.")
-            print_range(start, n - 1)
-            return url_list
-        # N-M
         try:
+            if "-" not in arg:  # Single index
+                idx = int(arg)
+                print_range(idx, idx)
+                return url_list
+            if arg == "-":
+                raise ValueError()
+            if arg.startswith("-"):  # -N
+                end = int(arg[1:])
+                print_range(0, end)
+                return url_list
+            if arg.endswith("-"):  # N-
+                start = int(arg[:-1])
+                print_range(start, n - 1)
+                return url_list
+            # N-M
             start, end = map(int, arg.split("-", 1))
+            print_range(start, end)
+            return url_list
         except ValueError:
-            raise CommandError("Invalid range argument.")
-        print_range(start, end)
-        return url_list
+            raise CommandError(
+                "Invalid argument format. Use a single index or a range (e.g., N, -N, N-, N-M)."
+            )
