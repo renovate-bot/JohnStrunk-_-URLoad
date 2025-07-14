@@ -3,7 +3,6 @@
 import textwrap
 from urllib.parse import urljoin
 
-import requests
 from bs4 import BeautifulSoup
 
 from urload.commands.base import Command, CommandError
@@ -36,7 +35,7 @@ class ImgCommand(Command):
         new_urls: list[URL] = []
         for url in url_list:
             try:
-                resp = requests.get(url.url, timeout=10, headers=url.headers)
+                resp = url.get()
                 resp.raise_for_status()
             except Exception as e:
                 print(f"Error fetching {url.url}: {e}")

@@ -5,6 +5,8 @@ A class representing a URL and its associated metadata.
 This allows commands to manipulate URLs and pass additional information when fetching.
 """
 
+import requests
+
 
 class URL:
     """
@@ -32,3 +34,13 @@ class URL:
     def __hash__(self) -> int:
         """Return a hash based on the url and headers."""
         return hash((self.url, frozenset(self.headers.items())))
+
+    def get(self, timeout: float = 10.0) -> requests.Response:
+        """
+        Perform an HTTP GET request for this URL using its headers.
+
+        :param timeout: Timeout in seconds for the request (default 10.0).
+        :return: The requests.Response object from the GET request.
+        :raises requests.RequestException: If the request fails.
+        """
+        return requests.get(self.url, timeout=timeout, headers=self.headers)
