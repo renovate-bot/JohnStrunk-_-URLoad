@@ -15,7 +15,7 @@ from prompt_toolkit.history import InMemoryHistory
 
 from urload.commands.add import AddCommand
 from urload.commands.base import Command
-from urload.commands.delete import DelCommand
+from urload.commands.delete import DeleteCommand
 from urload.commands.discard import DiscardCommand
 from urload.commands.exit import ExitCommand
 from urload.commands.head import HeadCommand
@@ -103,7 +103,7 @@ def main() -> None:
     # Register commands
     command_objs: dict[str, Command] = {}
     command_objs["add"] = AddCommand()
-    command_objs["del"] = DelCommand()
+    command_objs["del"] = DeleteCommand()
     command_objs["discard"] = DiscardCommand()
     command_objs["exit"] = ExitCommand()
     command_objs["head"] = HeadCommand()

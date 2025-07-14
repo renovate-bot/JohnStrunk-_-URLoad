@@ -2,13 +2,13 @@
 
 import pytest
 
-from urload.commands.delete import CommandError, DelCommand
+from urload.commands.delete import CommandError, DeleteCommand
 from urload.url import URL
 
 
 def test_del_command_single_index(capsys: pytest.CaptureFixture[str]) -> None:
     """Test deleting a single URL by index."""
-    cmd = DelCommand()
+    cmd = DeleteCommand()
     url_list = [URL("https://a.com"), URL("https://b.com"), URL("https://c.com")]
     result = cmd.run(["1"], url_list)
     captured = capsys.readouterr()
@@ -18,7 +18,7 @@ def test_del_command_single_index(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_del_command_range(capsys: pytest.CaptureFixture[str]) -> None:
     """Test deleting a range of URLs by index."""
-    cmd = DelCommand()
+    cmd = DeleteCommand()
     url_list = [
         URL("https://a.com"),
         URL("https://b.com"),
@@ -33,7 +33,7 @@ def test_del_command_range(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_del_command_range_with_spaces(capsys: pytest.CaptureFixture[str]) -> None:
     """Test deleting a range with spaces in the argument."""
-    cmd = DelCommand()
+    cmd = DeleteCommand()
     url_list = [
         URL("https://a.com"),
         URL("https://b.com"),
@@ -48,7 +48,7 @@ def test_del_command_range_with_spaces(capsys: pytest.CaptureFixture[str]) -> No
 
 def test_del_command_invalid_index() -> None:
     """Test that an invalid index raises CommandError."""
-    cmd = DelCommand()
+    cmd = DeleteCommand()
     url_list = [URL("https://a.com")]
     with pytest.raises(Exception):
         cmd.run(["5"], url_list)
@@ -56,7 +56,7 @@ def test_del_command_invalid_index() -> None:
 
 def test_del_command_invalid_range() -> None:
     """Test that an invalid range raises CommandError."""
-    cmd = DelCommand()
+    cmd = DeleteCommand()
     url_list = [URL("https://a.com"), URL("https://b.com")]
     with pytest.raises(Exception):
         cmd.run(["2-5"], url_list)
@@ -64,7 +64,7 @@ def test_del_command_invalid_range() -> None:
 
 def test_del_command_no_args() -> None:
     """Test that no arguments raises CommandError."""
-    cmd = DelCommand()
+    cmd = DeleteCommand()
     url_list = [URL("https://a.com")]
     with pytest.raises(Exception):
         cmd.run([], url_list)
@@ -72,7 +72,7 @@ def test_del_command_no_args() -> None:
 
 def test_del_command_non_integer_index() -> None:
     """Test that a non-integer index raises CommandError."""
-    cmd = DelCommand()
+    cmd = DeleteCommand()
     url_list = [URL("https://a.com"), URL("https://b.com")]
     with pytest.raises(CommandError, match="Invalid index."):
         cmd.run(["foo"], url_list)
