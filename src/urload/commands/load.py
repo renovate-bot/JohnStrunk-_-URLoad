@@ -14,17 +14,17 @@ class LoadCommand(Command):
         """
         load <filename> - Load URLs from a file
 
-        Loads a list of URLs (with optional headers) from the specified file. Each line should contain a URL, optionally followed by headers in a structured format. The current list is replaced by the loaded list.
+        Loads a list of URLs (with optional headers) from the specified file. Each line should contain a URL, optionally followed by headers in a structured format. The loaded URLs are appended to the current list.
         """
     )
 
     def run(self, args: list[str], url_list: list[URL]) -> list[URL]:
         """
-        Load URLs from a file, replacing the current list.
+        Load URLs from a file, appending to the current list.
 
         :param args: List of command-line arguments (expects one filename).
-        :param url_list: List of URL objects to process (ignored).
-        :return: A new list of URL objects loaded from the file.
+        :param url_list: List of URL objects to process (existing list).
+        :return: A new list of URL objects with loaded URLs appended.
         :raises CommandError: If arguments are invalid or file cannot be read/parsed.
         """
         if len(args) != 1:
@@ -46,4 +46,4 @@ class LoadCommand(Command):
                 raise CommandError(f"Error parsing line {i}: {e}")
             new_urls.append(url)
         print(f"Loaded {len(new_urls)} URLs from {filename}.")
-        return new_urls
+        return url_list + new_urls
