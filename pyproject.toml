@@ -8,7 +8,11 @@ version = "0.1.0"
 description = "An interactive tool for downloading URLs"
 authors = [{ name = "John Strunk", email = "john.strunk@gmail.com" }]
 requires-python = ">=3.13.5"
-dependencies = ["prompt-toolkit>=3.0.51"]
+dependencies = [
+    "beautifulsoup4>=4.13.4",
+    "prompt-toolkit>=3.0.51",
+    "requests>=2.32.4",
+]
 
 [dependency-groups]
 dev = ["pyright==1.1.403", "pytest==8.4.1", "pytest-cov==6.2.1", "ruff>=0.12.3"]
@@ -66,6 +70,7 @@ addopts = [
 
 [tool.ruff.format]
 docstring-code-format = true
+quote-style = "double"
 
 [tool.ruff.lint]
 # https://docs.astral.sh/ruff/rules/

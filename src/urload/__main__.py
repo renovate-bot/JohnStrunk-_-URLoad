@@ -15,11 +15,14 @@ from prompt_toolkit.history import InMemoryHistory
 
 from urload.commands.add import AddCommand
 from urload.commands.base import Command
-from urload.commands.delete import DelCommand
+from urload.commands.clear import ClearCommand
+from urload.commands.delete import DeleteCommand
 from urload.commands.discard import DiscardCommand
 from urload.commands.exit import ExitCommand
 from urload.commands.head import HeadCommand
 from urload.commands.help import HelpCommand
+from urload.commands.href import HrefCommand
+from urload.commands.img import ImgCommand
 from urload.commands.keep import KeepCommand
 from urload.commands.list import ListCommand
 from urload.commands.sort import SortCommand
@@ -100,14 +103,18 @@ def main() -> None:
     Provides a prompt with tab completion and history support.
     """
     url_list: list[URL] = []
-    # Register commands
+    # Register commands. Keep this dictionary sorted by command name and in
+    # sync with the command files in src/urload/commands.
     command_objs: dict[str, Command] = {}
     command_objs["add"] = AddCommand()
-    command_objs["del"] = DelCommand()
+    command_objs["clear"] = ClearCommand()
+    command_objs["del"] = DeleteCommand()
     command_objs["discard"] = DiscardCommand()
     command_objs["exit"] = ExitCommand()
     command_objs["head"] = HeadCommand()
     command_objs["help"] = HelpCommand(command_objs)
+    command_objs["href"] = HrefCommand()
+    command_objs["img"] = ImgCommand()
     command_objs["keep"] = KeepCommand()
     command_objs["list"] = ListCommand()
     command_objs["sort"] = SortCommand()

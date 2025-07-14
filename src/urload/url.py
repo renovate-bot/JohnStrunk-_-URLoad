@@ -1,9 +1,11 @@
 """
 A class representing a URL and its associated metadata.
 
-:class:`URL` encapsulates a URL string and optional metadata such as referrer.
+:class:`URL` encapsulates a URL string and optional metadata such as headers.
 This allows commands to manipulate URLs and pass additional information when fetching.
 """
+
+import requests
 
 
 class URL:
@@ -11,24 +13,34 @@ class URL:
     Represents a URL and its associated metadata.
 
     :param url: The URL string.
-    :param referrer: The referrer URL, if any.
+    :param headers: Optional dictionary of HTTP headers (e.g., may include 'Referer').
     """
 
-    def __init__(self, url: str, referrer: str | None = None) -> None:
-        """Initialize a URL with optional referrer."""
+    def __init__(self, url: str, headers: dict[str, str] | None = None) -> None:
+        """Initialize a URL with optional headers."""
         self.url = url
-        self.referrer = referrer
+        self.headers = headers or {}
 
     def __repr__(self) -> str:
         """Return a string representation of the URL object."""
-        return f"URL(url={self.url!r}, referrer={self.referrer!r})"
+        return f"URL(url={self.url!r}, headers={self.headers!r})"
 
     def __eq__(self, other: object) -> bool:
-        """Return True if the other object is a URL with the same url and referrer."""
+        """Return True if the other object is a URL with the same url and headers."""
         if not isinstance(other, URL):
             return NotImplemented
-        return self.url == other.url and self.referrer == other.referrer
+        return self.url == other.url and self.headers == other.headers
 
     def __hash__(self) -> int:
-        """Return a hash based on the url and referrer."""
-        return hash((self.url, self.referrer))
+        """Return a hash based on the url and headers."""
+        return hash((self.url, frozenset(self.headers.items())))
+
+    def get(self, timeout: float = 10.0) -> requests.Response:
+        """
+        Perform an HTTP GET request for this URL using its headers.
+
+        :param timeout: Timeout in seconds for the request (default 10.0).
+        :return: The requests.Response object from the GET request.
+        :raises requests.RequestException: If the request fails.
+        """
+        return requests.get(self.url, timeout=timeout, headers=self.headers)

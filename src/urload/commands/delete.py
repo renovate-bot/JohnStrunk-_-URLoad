@@ -7,12 +7,12 @@ from urload.commands.base import Command, CommandError
 from urload.url import URL
 
 
-class DelCommand(Command):
+class DeleteCommand(Command):
     """Deletes one or more URLs from the shared URL list by index or range."""
 
-    name = "del"
+    name = "delete"
     description = textwrap.dedent("""
-    del <index> | <start>-<end> - Delete one or more URLs by index or range.
+    delete <index> | <start>-<end> - Delete one or more URLs by index or range.
 
     This command removes a single URL by index or a range of URLs from the list.
     """)
