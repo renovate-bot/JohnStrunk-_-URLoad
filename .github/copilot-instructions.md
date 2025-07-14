@@ -8,8 +8,10 @@ An interactive CLI tool for scraping websites.
 - Use type hints for function signatures.
 - All public functions and classes must have docstrings.
   - Follow PEP 257 for docstring conventions.
-  - Do not repeat the parameter types in the docstring.
-  - Include any exceptions that the function may raise in the docstring.
+  - Describe each parameter and return value in the docstring, but do not
+    repeat the parameter types in the docstring.
+  - Include any exceptions that the function may raise in the docstring. Use
+    `:raises CommandError:` for user-facing errors.
 - `uv` is used to manage project dependencies.
   - Use `uv run urload` to run the application
   - Use `uv add <package>` to add a dependency or `uv add --dev <package>` if

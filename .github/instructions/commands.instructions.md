@@ -14,7 +14,18 @@ applyTo: src/urload/commands/*.py
 - Each command must define:
   - `name`: the command's string identifier (for example, `"add"`, `"del"`).
   - `description`: a multi-line string (use `textwrap.dedent`) describing
-    usage and behavior.
+    usage and behavior. The first line should be a short usage line, with the
+    name of the command and a brief description. A more detailed description
+    should follow. For example:
+
+    ```python
+    description = textwrap.dedent("""
+    add <url> - Add a URL to the list
+
+    This command allows you to add a URL to your current list of URLs.
+    """)
+    ```
+
   - A `run(self, args: list[str], url_list: list[URL]) -> list[URL]` method
     that implements the command logic.
 - All public classes and methods must have reStructuredText docstrings.
