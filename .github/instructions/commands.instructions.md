@@ -32,6 +32,9 @@ applyTo: src/urload/commands/*.py
 - Use type hints for all function signatures.
 - Raise `CommandError` (from `base.py`) for user-facing errors (such as
   invalid arguments).
+- Make sure the command is added to the `command_objs` dictionary in
+  `__main__.py` with the command name as the key and the command class as the
+  value.
 
 ## Imports and Dependencies
 
