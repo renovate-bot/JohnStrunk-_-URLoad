@@ -25,6 +25,8 @@ from urload.commands.href import HrefCommand
 from urload.commands.img import ImgCommand
 from urload.commands.keep import KeepCommand
 from urload.commands.list import ListCommand
+from urload.commands.load import LoadCommand
+from urload.commands.save import SaveCommand
 from urload.commands.sort import SortCommand
 from urload.commands.tail import TailCommand
 from urload.commands.uniq import UniqCommand
@@ -117,6 +119,8 @@ def main() -> None:
     command_objs["img"] = ImgCommand()
     command_objs["keep"] = KeepCommand()
     command_objs["list"] = ListCommand()
+    command_objs["load"] = LoadCommand()
+    command_objs["save"] = SaveCommand()
     command_objs["sort"] = SortCommand()
     command_objs["tail"] = TailCommand()
     command_objs["uniq"] = UniqCommand()
