@@ -12,10 +12,13 @@ An interactive CLI tool for scraping websites.
     repeat the parameter types in the docstring.
   - Include any exceptions that the function may raise in the docstring. Use
     `:raises CommandError:` for user-facing errors.
-- `uv` is used to manage project dependencies.
-  - Use `uv run urload` to run the application
-  - Use `uv add <package>` to add a dependency or `uv add --dev <package>` if
-  it's a development dependency.
+
+## Dependency management
+
+- Use `uv` to manage dependencies. Do not use `pip` directly.
+- Add new dependencies using `uv add <package>` or `uv add --dev <package>` in
+  the case of a development-only dependency.
+- Do not modify `uv.lock` directly; it is managed by `uv`.
 
 ## Testing
 
