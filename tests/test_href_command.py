@@ -25,7 +25,7 @@ EXPECTED_LINK_COUNT = 2
 
 
 def test_href_command_extracts_links(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test that href command extracts anchor links and sets referrer."""
+    """Test that href command extracts anchor links and sets Referer header."""
     html = (
         """<html><body><a href="https://a.com">A</a><a href="/b">B</a></body></html>"""
     )
@@ -42,7 +42,7 @@ def test_href_command_extracts_links(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "https://a.com" in hrefs
     assert "https://example.com/b" in hrefs
     for u in result:
-        assert u.referrer == "https://example.com"
+        assert u.headers.get("Referer") == "https://example.com"
 
 
 def test_href_command_removes_original(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -57,6 +57,8 @@ def test_href_command_removes_original(monkeypatch: pytest.MonkeyPatch) -> None:
     url_list = [URL("https://x.com")]
     result = cmd.run([], url_list)
     assert all(u.url != "https://x.com" for u in result)
+    for u in result:
+        assert u.headers.get("Referer") == "https://x.com"
 
 
 def test_href_command_takes_no_args() -> None:

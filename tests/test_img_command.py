@@ -25,7 +25,7 @@ EXPECTED_IMG_COUNT = 2
 
 
 def test_img_command_extracts_sources(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test that img command extracts image sources and sets referrer."""
+    """Test that img command extracts image sources and sets Referer header."""
     html = (
         '<html><body><img src="https://a.com/img.png"><img src="/b.png"></body></html>'
     )
@@ -42,11 +42,11 @@ def test_img_command_extracts_sources(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "https://a.com/img.png" in srcs
     assert "https://example.com/b.png" in srcs
     for u in result:
-        assert u.referrer == "https://example.com"
+        assert u.headers.get("Referer") == "https://example.com"
 
 
 def test_img_command_removes_original(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test that the original URL is not in the result list."""
+    """Test that the original URL is not in the result list and Referer is set."""
     html = '<img src="/foo.png">'
 
     def mock_get(url: str, timeout: int = 10) -> DummyResponse:
@@ -57,6 +57,8 @@ def test_img_command_removes_original(monkeypatch: pytest.MonkeyPatch) -> None:
     url_list = [URL("https://x.com")]
     result = cmd.run([], url_list)
     assert all(u.url != "https://x.com" for u in result)
+    for u in result:
+        assert u.headers.get("Referer") == "https://x.com"
 
 
 def test_img_command_takes_no_args() -> None:

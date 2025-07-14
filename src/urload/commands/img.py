@@ -50,5 +50,5 @@ class ImgCommand(Command):
                 if not isinstance(src_val, str):
                     continue
                 full_url = urljoin(url.url, src_val)
-                new_urls.append(URL(full_url, referrer=url.url))
+                new_urls.append(URL(full_url, headers={"Referer": url.url}))
         return new_urls
