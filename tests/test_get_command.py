@@ -9,7 +9,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from urload.commands.get import GetCommand
-from urload.settings import get_active_settings
+from urload.settings import AppSettings
 from urload.url import URL
 
 
@@ -64,10 +64,10 @@ def make_url(
 def test_get_command_success(temp_cwd: str) -> None:
     """Test that a successful download saves the file and returns an empty list."""
     url = make_url("http://example.com/file.txt", b"hello")
-    settings = get_active_settings()
+    settings = AppSettings()
     settings.filename_template = "{filename}"
     cmd = GetCommand()
-    result = cmd.run([], [url])
+    result = cmd.run([], [url], settings)
     assert result == []
     assert os.path.exists("file.txt")
     with open("file.txt", "rb") as f:
@@ -77,10 +77,10 @@ def test_get_command_success(temp_cwd: str) -> None:
 def test_get_command_default_filename(temp_cwd: str) -> None:
     """Test that a URL with no filename saves as index.html."""
     url = make_url("http://example.com/")
-    settings = get_active_settings()
+    settings = AppSettings()
     settings.filename_template = "{filename}"
     cmd = GetCommand()
-    result = cmd.run([], [url])
+    result = cmd.run([], [url], settings)
     assert result == []
     assert os.path.exists("index.html")
 
@@ -89,7 +89,8 @@ def test_get_command_failure(temp_cwd: str) -> None:
     """Test that a failed download returns the URL in the result and does not save a file."""
     url = make_url("http://bad.com/file.txt", raise_exc=Exception("fail"))
     cmd = GetCommand()
-    result = cmd.run([], [url])
+    settings = AppSettings()
+    result = cmd.run([], [url], settings)
     assert result == [url]
     assert not os.path.exists("file.txt")
 
@@ -98,10 +99,10 @@ def test_get_command_partial_success(temp_cwd: str) -> None:
     """Test that only failed URLs are returned and successful files are saved."""
     url1 = make_url("http://ok.com/a.txt", b"a")
     url2 = make_url("http://fail.com/b.txt", raise_exc=Exception("fail"))
-    settings = get_active_settings()
+    settings = AppSettings()
     settings.filename_template = "{filename}"
     cmd = GetCommand()
-    result = cmd.run([], [url1, url2])
+    result = cmd.run([], [url1, url2], settings)
     assert result == [url2]
     assert os.path.exists("a.txt")
     assert not os.path.exists("b.txt")
@@ -113,11 +114,11 @@ def test_get_command_dry_run_prints_and_leaves_list_unchanged(
     """Test that -n (dry run) prints index, url, and filename, and leaves url_list unchanged."""
     url1 = make_url("http://example.com/foo.txt")
     url2 = make_url("http://example.com/bar/")
-    settings = get_active_settings()
+    settings = AppSettings()
     settings.filename_template = "{filename}"
     cmd = GetCommand()
     url_list = [url1, url2]
-    result = cmd.run(["-n"], url_list)
+    result = cmd.run(["-n"], url_list, settings)
     assert result == url_list
     captured = capsys.readouterr().out.strip().splitlines()
     assert captured[0].endswith("foo.txt")

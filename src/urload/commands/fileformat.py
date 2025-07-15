@@ -4,7 +4,7 @@ import textwrap
 from typing import Any
 
 from urload.commands.base import Command, CommandError
-from urload.settings import get_active_settings
+from urload.settings import AppSettings
 
 
 class FileformatCommand(Command):
@@ -21,16 +21,18 @@ class FileformatCommand(Command):
     """
     )
 
-    def run(self, args: list[str], url_list: list[Any]) -> list[Any]:
+    def run(
+        self, args: list[str], url_list: list[Any], settings: AppSettings
+    ) -> list[Any]:
         """
         Get or set the filename template in settings.
 
         :param args: [] to print, [<template>] to set
         :param url_list: Unused
+        :param settings: The AppSettings object
         :raises CommandError: If more than one argument or invalid template
         :return: url_list unchanged
         """
-        settings = get_active_settings()
         if not args:
             print(settings.filename_template)
             return url_list

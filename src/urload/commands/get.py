@@ -9,7 +9,7 @@ from datetime import datetime
 from urllib.parse import unquote, urlparse
 
 from urload.commands.base import Command
-from urload.settings import get_active_settings
+from urload.settings import AppSettings
 from urload.url import URL
 
 
@@ -24,15 +24,17 @@ class GetCommand(Command):
     If -n is given, perform a dry run: print the index, URL, and filename for each URL, but do not download anything.
     """)
 
-    def run(self, args: list[str], url_list: list[URL]) -> list[URL]:
+    def run(
+        self, args: list[str], url_list: list[URL], settings: AppSettings
+    ) -> list[URL]:
         """
         Download each URL to a file named after the final path component, or perform a dry run.
 
         :param args: List of command-line arguments. If '-n' is present, do a dry run.
         :param url_list: List of URLs to download.
+        :param settings: The AppSettings object.
         :return: List of URLs that failed to download, or the original list if dry run.
         """
-        settings = get_active_settings()
         dry_run = "-n" in args
         time_fmt = getattr(settings, "time_format", "%Y%m%d%H%M%S")
         template = getattr(settings, "filename_template", "{timestamp}_{filename}")
@@ -58,23 +60,20 @@ class GetCommand(Command):
             )
 
         if dry_run:
-            for idx, url_obj in enumerate(url_list):
-                url = url_obj.url
-                filename = build_filename(url)
-                print(f"[{idx}] {url} {filename}")
+            for idx, url in enumerate(url_list):
+                fname = build_filename(url.url)
+                print(f"[{idx}] {url.url} {fname}")
             return url_list
 
-        failed_urls: list[URL] = []
-        for url_obj in url_list:
-            url = url_obj.url
-            filename = build_filename(url)
+        failed: list[URL] = []
+        for url in url_list:
+            fname = build_filename(url.url)
             try:
-                resp = url_obj.get()
+                resp = url.get()
                 resp.raise_for_status()
-                with open(filename, "wb") as f:
+                with open(fname, "wb") as f:
                     f.write(resp.content)
-                print(f"Saved {url} to {filename}")
             except Exception as e:
                 print(f"Failed to download {url}: {e}")
-                failed_urls.append(url_obj)
-        return failed_urls
+                failed.append(url)
+        return failed

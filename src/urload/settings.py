@@ -51,12 +51,3 @@ class AppSettings(BaseSettings):
             doc[key] = value
         with open(CONFIG_FILE, "w", encoding="utf-8") as f:
             f.write(tomlkit.dumps(doc, sort_keys=True))  # type: ignore
-
-
-# Singleton for active settings
-ACTIVE_SETTINGS: AppSettings = AppSettings.load()
-
-
-def get_active_settings() -> AppSettings:
-    """Return the active AppSettings singleton."""
-    return ACTIVE_SETTINGS

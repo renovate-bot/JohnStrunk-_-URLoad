@@ -1,5 +1,7 @@
 """Tests for the URLoad command base class, command interface, and error handling."""
 
+from typing import Any
+
 import pytest
 
 from urload.commands.base import Command, CommandError
@@ -12,7 +14,9 @@ class DummyCommand(Command):
     name = "dummy"
     description = "Dummy command for testing.\nSecond line."
 
-    def run(self, args: list[str], url_list: list[URL]) -> list[URL]:
+    def run(
+        self, args: list[str], url_list: list[URL], settings: Any | None = None
+    ) -> list[URL]:
         """Raise CommandError if 'error' is in args, else store args and return url_list unchanged."""
         if "error" in args:
             raise CommandError("Dummy error!")

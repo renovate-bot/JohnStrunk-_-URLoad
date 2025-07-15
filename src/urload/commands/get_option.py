@@ -7,7 +7,7 @@ Print all application settings as key=value, or a single key if specified.
 import textwrap
 
 from urload.commands.base import Command, CommandError
-from urload.settings import AppSettings, get_active_settings
+from urload.settings import AppSettings
 from urload.url import URL
 
 
@@ -17,6 +17,7 @@ class GetOptionCommand(Command):
 
     :param args: Optionally a single key to print.
     :param url_list: Not used.
+    :param settings: The AppSettings object.
     :raises CommandError: If the key is unknown.
     """
 
@@ -27,9 +28,10 @@ class GetOptionCommand(Command):
     Print all application settings as key=value, or a single key if specified.
     """)
 
-    def run(self, args: list[str], url_list: list[URL]) -> list[URL]:
+    def run(
+        self, args: list[str], url_list: list[URL], settings: AppSettings
+    ) -> list[URL]:
         """Print all settings as key=value, or a single key if specified."""
-        settings = get_active_settings()
         valid_keys = set(AppSettings.model_fields.keys())
         if not args:
             for key, value in settings.model_dump().items():

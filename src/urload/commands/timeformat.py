@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Any
 
 from urload.commands.base import Command, CommandError
-from urload.settings import get_active_settings
+from urload.settings import AppSettings
 
 
 class TimeformatCommand(Command):
@@ -20,16 +20,18 @@ class TimeformatCommand(Command):
     Default: "%Y%m%d%H%M%S"
     """)
 
-    def run(self, args: list[str], url_list: list[Any]) -> list[Any]:
+    def run(
+        self, args: list[str], url_list: list[Any], settings: AppSettings
+    ) -> list[Any]:
         """
         Get or set the current time format string in settings.
 
         :param args: [] to print, [<format>] to set
         :param url_list: Unused
+        :param settings: The AppSettings object
         :raises CommandError: If more than one argument or invalid format string
         :return: url_list unchanged
         """
-        settings = get_active_settings()
         if not args:
             print(getattr(settings, "time_format", "%Y%m%d%H%M%S"))
             return url_list
@@ -38,9 +40,7 @@ class TimeformatCommand(Command):
         fmt = args[0]
         # Validate format string by trying to format now
         try:
-            # This will raise ValueError if the format is invalid on most platforms
             test = datetime.now().strftime(fmt)
-            # Check for unsupported format codes (strftime may not raise for all invalid codes)
             if "%Q" in fmt or test == fmt:
                 raise ValueError("Invalid or unsupported strftime format code.")
         except Exception as e:

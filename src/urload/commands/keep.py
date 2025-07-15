@@ -2,6 +2,7 @@
 
 import re
 import textwrap
+from typing import Any
 
 from urload.commands.base import Command, CommandError
 from urload.url import URL
@@ -17,7 +18,9 @@ class KeepCommand(Command):
     This command keeps only the URLs in the list that match the given regex pattern.
     """)
 
-    def run(self, args: list[str], url_list: list[URL]) -> list[URL]:
+    def run(
+        self, args: list[str], url_list: list[URL], settings: Any = None
+    ) -> list[URL]:
         """Keep only URLs matching the regex pattern."""
         if not args:
             raise CommandError("No regex pattern provided.")
