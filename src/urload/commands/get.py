@@ -12,6 +12,9 @@ from urload.commands.base import Command
 from urload.settings import AppSettings
 from urload.url import URL
 
+# Module-level variable to persist index across GetCommand invocations
+_get_index = 0
+
 
 class GetCommand(Command):
     """Download each URL in the list to a file in the current directory, or perform a dry run."""
@@ -35,12 +38,15 @@ class GetCommand(Command):
         :param settings: The AppSettings object.
         :return: List of URLs that failed to download, or the original list if dry run.
         """
+        global _get_index  # noqa: PLW0603
         dry_run = "-n" in args
         time_fmt = getattr(settings, "time_format", "%Y%m%d%H%M%S")
         template = getattr(settings, "filename_template", "{timestamp}_{filename}")
         now_str = datetime.now().strftime(time_fmt)
 
-        def build_filename(url: str) -> str:
+        current_index = _get_index
+
+        def build_filename(url: str, index: int) -> str:
             parsed = urlparse(url)
             host = parsed.hostname or "localhost"
             path = parsed.path or "/"
@@ -57,17 +63,20 @@ class GetCommand(Command):
                 host=host,
                 dirname=dirname.lstrip("/"),
                 filename=filename,
+                index=index,
             )
 
         if dry_run:
-            for idx, url in enumerate(url_list):
-                fname = build_filename(url.url)
-                print(f"[{idx}] {url.url} {fname}")
+            for url in url_list:
+                fname = build_filename(url.url, current_index)
+                print(f"[{current_index}] {url.url} {fname}")
+                current_index += 1
+            # Do not update _global_get_index in dry run
             return url_list
 
         failed: list[URL] = []
         for url in url_list:
-            fname = build_filename(url.url)
+            fname = build_filename(url.url, current_index)
             try:
                 resp = url.get()
                 resp.raise_for_status()
@@ -76,4 +85,7 @@ class GetCommand(Command):
             except Exception as e:
                 print(f"Failed to download {url}: {e}")
                 failed.append(url)
+            current_index += 1
+        # Persist the updated index for future get command invocations
+        _get_index = current_index
         return failed

@@ -42,3 +42,14 @@ def test_fileformat_too_many_args() -> None:
     cmd = FileformatCommand()
     with pytest.raises(CommandError):
         cmd.run(["foo", "bar"], [], settings)
+
+
+def test_fileformat_accepts_index_param(capsys: pytest.CaptureFixture[str]) -> None:
+    """It accepts 'index' as a valid template parameter."""
+    settings = AppSettings()
+    cmd = FileformatCommand()
+    new_template = "{index:04d}_{filename}"
+    cmd.run([new_template], [], settings)
+    out = capsys.readouterr().out.strip()
+    assert settings.filename_template == new_template
+    assert f"Filename template set to: {new_template}" in out

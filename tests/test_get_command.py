@@ -8,6 +8,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
+import urload.commands.get
 from urload.commands.get import GetCommand
 from urload.settings import AppSettings
 from urload.url import URL
@@ -61,6 +62,11 @@ def make_url(
     return url
 
 
+def reset_get_index():
+    """Reset the _get_index variable in the get command module for test isolation."""
+    urload.commands.get._get_index = 0  # type: ignore
+
+
 def test_get_command_success(temp_cwd: str) -> None:
     """Test that a successful download saves the file and returns an empty list."""
     url = make_url("http://example.com/file.txt", b"hello")
@@ -112,6 +118,7 @@ def test_get_command_dry_run_prints_and_leaves_list_unchanged(
     temp_cwd: str, capsys: Any
 ) -> None:
     """Test that -n (dry run) prints index, url, and filename, and leaves url_list unchanged."""
+    reset_get_index()
     url1 = make_url("http://example.com/foo.txt")
     url2 = make_url("http://example.com/bar/")
     settings = AppSettings()
@@ -128,3 +135,27 @@ def test_get_command_dry_run_prints_and_leaves_list_unchanged(
     # Ensure no files were created
     assert not os.path.exists("foo.txt")
     assert not os.path.exists("index.html")
+
+
+def test_get_command_index_template(temp_cwd: str) -> None:
+    """Test that the 'index' template value is substituted correctly in filenames."""
+    reset_get_index()
+    url1 = make_url("http://example.com/a.txt", b"A")
+    url2 = make_url("http://example.com/b.txt", b"B")
+    settings = AppSettings()
+    settings.filename_template = "{index:02d}_{filename}"
+    cmd = GetCommand()
+    result = cmd.run([], [url1, url2], settings)
+    assert result == []
+    assert os.path.exists("00_a.txt")
+    assert os.path.exists("01_b.txt")
+    with open("00_a.txt", "rb") as f:
+        assert f.read() == b"A"
+    with open("01_b.txt", "rb") as f:
+        assert f.read() == b"B"
+    url3 = make_url("http://example.com/c.txt", b"C")
+    result = cmd.run([], [url3], settings)
+    assert result == []
+    assert os.path.exists("02_c.txt")
+    with open("02_c.txt", "rb") as f:
+        assert f.read() == b"C"

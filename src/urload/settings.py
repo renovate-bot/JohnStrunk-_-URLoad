@@ -11,7 +11,7 @@ CONFIG_FILE = os.environ.get("URLOAD_CONFIG_FILE", "urload.toml")
 class AppSettings(BaseSettings):
     """Application settings for URLoad."""
 
-    filename_template: str = "{timestamp}_{filename}"
+    filename_template: str = "{index:04d}_{filename}"
     time_format: str = "%Y%m%d%H%M%S"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")

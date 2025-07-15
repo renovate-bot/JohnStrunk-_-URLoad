@@ -17,7 +17,7 @@ class FileformatCommand(Command):
 
     With no arguments, prints the current filename template (used with str.format).
     With a single argument, sets the filename template (must be valid for str.format).
-    Valid template parameters: timestamp, basename, ext, host, dirname, filename
+    Valid template parameters: timestamp, basename, ext, host, dirname, filename, index
     """
     )
 
@@ -48,6 +48,7 @@ class FileformatCommand(Command):
                 host="example.com",
                 dirname="foo/bar",
                 filename="file.txt",
+                index=0,
             )
         except Exception as e:
             raise CommandError(f"Invalid filename template: {e}")
