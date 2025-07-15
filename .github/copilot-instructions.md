@@ -15,17 +15,19 @@ An interactive CLI tool for scraping websites.
 
 ## Dependency management
 
-- Use `uv` to manage dependencies. Do not use `pip` directly.
-- Add new dependencies using `uv add <package>` or `uv add --dev <package>` in
-  the case of a development-only dependency.
+- Use `uv` to manage dependencies.
+  - Do not use `pip` or `uv pip`.
+  - Do not directly manage the virtual environment; `uv` handles this.
+  - New packages can be added using `uv add <package>` or `uv add --dev
+    <package>` if it is a development-only dependency.
 - Do not modify `uv.lock` directly; it is managed by `uv`.
 
 ## Testing
 
 - Use `pytest` for testing.
 - Tests should be placed in the `tests` directory.
-- After each change, do the following, in order. Do not skip or combine any steps:
-  - Run the linter, `uv run ruff check`, fix any issues it reports, and rerun.
-  - Run the type checker, `uv run pyright`, fix any issues it reports, and rerun.
-  - Run the tests, `uv run pytest`, and ensure all tests pass.
-  - Run the formatter, `uv run ruff format`.
+- After adding or modifying code, write tests to cover the changes.
+- Use `./hack/check.sh` to run all tests.
+  - Fix any warnings or errors surfaced by the command.
+  - Continue to run the command and fix issues until it passes by printing
+    "All checks passed successfully."

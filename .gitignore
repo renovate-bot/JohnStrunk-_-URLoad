@@ -1,8 +1,12 @@
+# Development files
 __pycache__/
+/.coverage
 .env
 /.pytest_cache/
 /.ruff_cache/
 /.venv/
-/.coverage
 /coverage.xml
 /htmlcov/
+
+# Configuration file
+urload.toml
