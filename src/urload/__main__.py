@@ -5,6 +5,7 @@ This module provides the entry point for the URLoad application, an interactive
 command-line tool for scraping websites with tab completion and history support.
 """
 
+import atexit
 from collections.abc import Generator
 from typing import Any
 
@@ -19,6 +20,7 @@ from urload.commands.clear import ClearCommand
 from urload.commands.delete import DeleteCommand
 from urload.commands.discard import DiscardCommand
 from urload.commands.exit import ExitCommand
+from urload.commands.get_option import GetOptionCommand
 from urload.commands.head import HeadCommand
 from urload.commands.help import HelpCommand
 from urload.commands.href import HrefCommand
@@ -27,9 +29,11 @@ from urload.commands.keep import KeepCommand
 from urload.commands.list import ListCommand
 from urload.commands.load import LoadCommand
 from urload.commands.save import SaveCommand
+from urload.commands.set_option import SetOptionCommand
 from urload.commands.sort import SortCommand
 from urload.commands.tail import TailCommand
 from urload.commands.uniq import UniqCommand
+from urload.settings import ACTIVE_SETTINGS
 from urload.url import URL
 
 HELP_ARG_COUNT = 2
@@ -98,21 +102,17 @@ class CommandCompleter(Completer):
         return
 
 
-def main() -> None:
-    """
-    Entry point for the URLoad interactive CLI application.
-
-    Provides a prompt with tab completion and history support.
-    """
-    url_list: list[URL] = []
-    # Register commands. Keep this dictionary sorted by command name and in
-    # sync with the command files in src/urload/commands.
+def build_command_objs() -> dict[str, Command]:
+    """Build and return the command objects dictionary."""
+    # All commands must be listed here to be available in the CLI
+    # Keep this list sorted
     command_objs: dict[str, Command] = {}
     command_objs["add"] = AddCommand()
     command_objs["clear"] = ClearCommand()
     command_objs["del"] = DeleteCommand()
     command_objs["discard"] = DiscardCommand()
     command_objs["exit"] = ExitCommand()
+    command_objs["get-option"] = GetOptionCommand()
     command_objs["head"] = HeadCommand()
     command_objs["help"] = HelpCommand(command_objs)
     command_objs["href"] = HrefCommand()
@@ -121,39 +121,57 @@ def main() -> None:
     command_objs["list"] = ListCommand()
     command_objs["load"] = LoadCommand()
     command_objs["save"] = SaveCommand()
+    command_objs["set-option"] = SetOptionCommand()
     command_objs["sort"] = SortCommand()
     command_objs["tail"] = TailCommand()
     command_objs["uniq"] = UniqCommand()
+    return command_objs
 
+
+def handle_user_input(
+    user_input: str, command_objs: dict[str, Command], url_list: list[URL]
+) -> list[URL]:
+    """Process a single user input line and return the new url_list."""
+    # Remove unnecessary isinstance check
+    parts = user_input.strip().split()
+    if not parts:
+        return url_list
+    cmd, *args = parts
+    if cmd in command_objs:
+        try:
+            return command_objs[cmd].run(args, url_list)
+        except SystemExit:
+            raise
+        except Exception as e:
+            print(e)
+            return url_list
+    else:
+        print(f"Unknown command: {cmd}")
+        return url_list
+
+
+def main() -> None:
+    """
+    Entry point for the URLoad interactive CLI application.
+
+    Provides a prompt with tab completion and history support.
+    """
+    url_list: list[URL] = []
+    settings = ACTIVE_SETTINGS
+    command_objs = build_command_objs()
     completer = CommandCompleter(list(command_objs.keys()))
     history: InMemoryHistory = InMemoryHistory()
     session: PromptSession[Any] = PromptSession(completer=completer, history=history)
-
+    atexit.register(settings.save)
     print("Welcome to URLoad! Type 'help' for commands.")
     while True:
         try:
             prompt_str = f"URLoad ({len(url_list)}) > "
             user_input = session.prompt(prompt_str)
-            if not isinstance(user_input, str):
-                print("Invalid input.")
-                continue
-            parts = user_input.strip().split()
-            if not parts:
-                continue
-            cmd, *args = parts
-            if cmd in command_objs:
-                try:
-                    url_list = command_objs[cmd].run(args, url_list)
-                except SystemExit:
-                    break
-                except Exception as e:
-                    print(e)
-            else:
-                print(f"Unknown command: {cmd}")
+            try:
+                url_list = handle_user_input(user_input, command_objs, url_list)
+            except SystemExit:
+                break
         except (KeyboardInterrupt, EOFError):
             print("\nGoodbye!")
             break
-
-
-if __name__ == "__main__":
-    main()
