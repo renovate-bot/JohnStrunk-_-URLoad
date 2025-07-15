@@ -12,6 +12,7 @@ class AppSettings(BaseSettings):
     """Application settings for URLoad."""
 
     filename_template: str = "{timestamp}_{filename}"
+    time_format: str = "%Y%m%d%H%M%S"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
