@@ -20,6 +20,7 @@ from urload.commands.clear import ClearCommand
 from urload.commands.delete import DeleteCommand
 from urload.commands.discard import DiscardCommand
 from urload.commands.exit import ExitCommand
+from urload.commands.fileformat import FileformatCommand
 from urload.commands.get import GetCommand
 from urload.commands.get_option import GetOptionCommand
 from urload.commands.head import HeadCommand
@@ -114,6 +115,7 @@ def build_command_objs() -> dict[str, Command]:
     command_objs["del"] = DeleteCommand()
     command_objs["discard"] = DiscardCommand()
     command_objs["exit"] = ExitCommand()
+    command_objs["fileformat"] = FileformatCommand()
     command_objs["get"] = GetCommand()
     command_objs["get-option"] = GetOptionCommand()
     command_objs["head"] = HeadCommand()
