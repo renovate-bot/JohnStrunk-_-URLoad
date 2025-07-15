@@ -98,3 +98,23 @@ def test_get_command_partial_success(temp_cwd: str) -> None:
     assert result == [url2]
     assert os.path.exists("a.txt")
     assert not os.path.exists("b.txt")
+
+
+def test_get_command_dry_run_prints_and_leaves_list_unchanged(
+    temp_cwd: str, capsys: Any
+) -> None:
+    """Test that -n (dry run) prints index, url, and filename, and leaves url_list unchanged."""
+    url1 = make_url("http://example.com/foo.txt")
+    url2 = make_url("http://example.com/bar/")
+    cmd = GetCommand()
+    url_list = [url1, url2]
+    result = cmd.run(["-n"], url_list)
+    assert result == url_list
+    captured = capsys.readouterr().out.strip().splitlines()
+    assert captured[0].endswith("foo.txt")
+    assert captured[1].endswith("index.html")
+    assert "[0] http://example.com/foo.txt foo.txt" in captured[0]
+    assert "[1] http://example.com/bar/ index.html" in captured[1]
+    # Ensure no files were created
+    assert not os.path.exists("foo.txt")
+    assert not os.path.exists("index.html")
