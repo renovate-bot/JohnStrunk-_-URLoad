@@ -1,9 +1,8 @@
 """Settings infrastructure for URLoad application."""
 
 import os
-import tomllib
 
-import toml
+import tomlkit
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 CONFIG_FILE = os.environ.get("URLOAD_CONFIG_FILE", "urload.toml")
@@ -20,15 +19,37 @@ class AppSettings(BaseSettings):
     def load(cls) -> "AppSettings":
         """Load settings from urload.toml if it exists, else use defaults."""
         if os.path.exists(CONFIG_FILE):
-            with open(CONFIG_FILE, "rb") as f:
-                data = tomllib.load(f)
-            return cls(**data)
+            with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                data = tomlkit.parse(f.read())
+
+            def extract_value(v: object) -> str:
+                if hasattr(v, "value"):
+                    return str(getattr(v, "value"))
+                if isinstance(v, dict):
+                    return str(
+                        {
+                            str(kk):  # type: ignore
+                            extract_value(vv)  # type: ignore
+                            for kk, vv in v.items()  # type: ignore
+                        }
+                    )
+                return str(v)
+
+            data_dict: dict[str, str] = {
+                str(k):  # type: ignore
+                extract_value(v)
+                for k, v in dict(data).items()  # type: ignore
+            }
+            return cls(**data_dict)
         return cls()
 
     def save(self) -> None:
         """Save current settings to urload.toml."""
+        doc = tomlkit.document()
+        for key, value in self.model_dump().items():
+            doc[key] = value
         with open(CONFIG_FILE, "w", encoding="utf-8") as f:
-            toml.dump(self.model_dump(), f)
+            f.write(tomlkit.dumps(doc, sort_keys=True))  # type: ignore
 
 
 # Singleton for active settings
