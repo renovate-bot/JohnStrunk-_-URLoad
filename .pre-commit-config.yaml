@@ -102,3 +102,12 @@ repos:
     hooks:
       # Check that JSON files are valid JSON5
       - id: check-json5
+
+  - repo: local
+    hooks:
+      - id: hack-check
+        name: Run hack/check.sh
+        entry: ./hack/check.sh
+        language: script
+        pass_filenames: false
+        always_run: true

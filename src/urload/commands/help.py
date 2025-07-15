@@ -1,5 +1,6 @@
 """Implements the 'help' command for URLoad."""
 
+import shutil
 import textwrap
 
 from urload.commands.base import Command
@@ -38,7 +39,13 @@ class HelpCommand(Command):
         else:
             cmd = args[0]
             if cmd in self.commands:
-                print(self.commands[cmd].help())
+                width = min(shutil.get_terminal_size(fallback=(90, 20)).columns, 90)
+                help_text = self.commands[cmd].help()
+                print(
+                    "\n".join(
+                        textwrap.fill(line, width) for line in help_text.splitlines()
+                    )
+                )
             else:
                 print(f"No such command: {cmd}")
         return url_list
