@@ -12,6 +12,8 @@ An interactive CLI tool for scraping websites.
     repeat the parameter types in the docstring.
   - Include any exceptions that the function may raise in the docstring. Use
     `:raises CommandError:` for user-facing errors.
+- After any change, run `./hack/check.sh` to ensure code style and linting
+  checks pass.
 
 ## Dependency management
 
@@ -24,7 +26,7 @@ An interactive CLI tool for scraping websites.
 
 ## Testing
 
-- Use `pytest` for testing.
+- Use `uv run pytest` for testing.
 - Tests should be placed in the `tests` directory.
 - After adding or modifying code, write tests to cover the changes.
 - Use `./hack/check.sh` to run all tests.
