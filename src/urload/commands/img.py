@@ -1,6 +1,7 @@
 """Extracts all image sources from each URL in the list and adds them to the URL list with the original URL as the referrer."""
 
 import textwrap
+from typing import Any
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
@@ -21,7 +22,9 @@ class ImgCommand(Command):
         """
     )
 
-    def run(self, args: list[str], url_list: list[URL]) -> list[URL]:
+    def run(
+        self, args: list[str], url_list: list[URL], settings: Any = None
+    ) -> list[URL]:
         """
         Return a new list of URLs extracted from image sources, with the original URL as referrer.
 

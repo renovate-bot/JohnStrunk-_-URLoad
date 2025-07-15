@@ -20,6 +20,7 @@ from urload.commands.clear import ClearCommand
 from urload.commands.delete import DeleteCommand
 from urload.commands.discard import DiscardCommand
 from urload.commands.exit import ExitCommand
+from urload.commands.fileformat import FileformatCommand
 from urload.commands.get import GetCommand
 from urload.commands.get_option import GetOptionCommand
 from urload.commands.head import HeadCommand
@@ -33,8 +34,9 @@ from urload.commands.save import SaveCommand
 from urload.commands.set_option import SetOptionCommand
 from urload.commands.sort import SortCommand
 from urload.commands.tail import TailCommand
+from urload.commands.timeformat import TimeformatCommand
 from urload.commands.uniq import UniqCommand
-from urload.settings import ACTIVE_SETTINGS
+from urload.settings import AppSettings
 from urload.url import URL
 
 HELP_ARG_COUNT = 2
@@ -113,6 +115,7 @@ def build_command_objs() -> dict[str, Command]:
     command_objs["del"] = DeleteCommand()
     command_objs["discard"] = DiscardCommand()
     command_objs["exit"] = ExitCommand()
+    command_objs["fileformat"] = FileformatCommand()
     command_objs["get"] = GetCommand()
     command_objs["get-option"] = GetOptionCommand()
     command_objs["head"] = HeadCommand()
@@ -126,22 +129,25 @@ def build_command_objs() -> dict[str, Command]:
     command_objs["set-option"] = SetOptionCommand()
     command_objs["sort"] = SortCommand()
     command_objs["tail"] = TailCommand()
+    command_objs["timeformat"] = TimeformatCommand()
     command_objs["uniq"] = UniqCommand()
     return command_objs
 
 
 def handle_user_input(
-    user_input: str, command_objs: dict[str, Command], url_list: list[URL]
+    user_input: str,
+    command_objs: dict[str, Command],
+    url_list: list[URL],
+    settings: AppSettings,
 ) -> list[URL]:
     """Process a single user input line and return the new url_list."""
-    # Remove unnecessary isinstance check
     parts = user_input.strip().split()
     if not parts:
         return url_list
     cmd, *args = parts
     if cmd in command_objs:
         try:
-            return command_objs[cmd].run(args, url_list)
+            return command_objs[cmd].run(args, url_list, settings)
         except SystemExit:
             raise
         except Exception as e:
@@ -159,7 +165,7 @@ def main() -> None:
     Provides a prompt with tab completion and history support.
     """
     url_list: list[URL] = []
-    settings = ACTIVE_SETTINGS
+    settings = AppSettings.load()
     command_objs = build_command_objs()
     completer = CommandCompleter(list(command_objs.keys()))
     history: InMemoryHistory = InMemoryHistory()
@@ -171,7 +177,9 @@ def main() -> None:
             prompt_str = f"URLoad ({len(url_list)}) > "
             user_input = session.prompt(prompt_str)
             try:
-                url_list = handle_user_input(user_input, command_objs, url_list)
+                url_list = handle_user_input(
+                    user_input, command_objs, url_list, settings
+                )
             except SystemExit:
                 break
         except (KeyboardInterrupt, EOFError):

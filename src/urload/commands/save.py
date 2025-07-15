@@ -1,6 +1,7 @@
 """Save the current list of URLs (with optional headers) to a text file."""
 
 import textwrap
+from typing import Any
 
 from urload.commands.base import Command, CommandError
 from urload.url import URL
@@ -18,7 +19,9 @@ class SaveCommand(Command):
         """
     )
 
-    def run(self, args: list[str], url_list: list[URL]) -> list[URL]:
+    def run(
+        self, args: list[str], url_list: list[URL], settings: Any = None
+    ) -> list[URL]:
         """
         Save URLs to a file.
 

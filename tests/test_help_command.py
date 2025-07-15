@@ -1,5 +1,7 @@
 """Tests for the HelpCommand."""
 
+from typing import Any
+
 from pytest import CaptureFixture
 
 from urload.commands.base import Command
@@ -13,7 +15,9 @@ class DummyCommand(Command):
     name = "dummy"
     description = "Dummy command."
 
-    def run(self, args: list[str], url_list: list[URL]) -> list[URL]:
+    def run(
+        self, args: list[str], url_list: list[URL], settings: Any = None
+    ) -> list[URL]:
         """No-op for testing."""
         return url_list
 

@@ -1,6 +1,7 @@
 """Implements the 'uniq' command for URLoad."""
 
 import textwrap
+from typing import Any
 
 from urload.commands.base import Command
 from urload.url import URL
@@ -16,7 +17,9 @@ class UniqCommand(Command):
     This command removes duplicate URLs from the list, preserving order and keeping the first instance of each URL.
     """)
 
-    def run(self, args: list[str], url_list: list[URL]) -> list[URL]:
+    def run(
+        self, args: list[str], url_list: list[URL], settings: Any = None
+    ) -> list[URL]:
         """Remove duplicate URLs, keeping only the first occurrence."""
         seen: set[str] = set()
         unique_list: list[URL] = []

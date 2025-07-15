@@ -4,12 +4,16 @@ get - Download each URL in the list to a file in the current directory.
 Each file is named after the final component of the URL path, excluding query parameters.
 """
 
-import os
 import textwrap
+from datetime import datetime
 from urllib.parse import unquote, urlparse
 
 from urload.commands.base import Command
+from urload.settings import AppSettings
 from urload.url import URL
+
+# Module-level variable to persist index across GetCommand invocations
+_get_index = 0
 
 
 class GetCommand(Command):
@@ -23,41 +27,65 @@ class GetCommand(Command):
     If -n is given, perform a dry run: print the index, URL, and filename for each URL, but do not download anything.
     """)
 
-    def run(self, args: list[str], url_list: list[URL]) -> list[URL]:
+    def run(
+        self, args: list[str], url_list: list[URL], settings: AppSettings
+    ) -> list[URL]:
         """
         Download each URL to a file named after the final path component, or perform a dry run.
 
         :param args: List of command-line arguments. If '-n' is present, do a dry run.
         :param url_list: List of URLs to download.
+        :param settings: The AppSettings object.
         :return: List of URLs that failed to download, or the original list if dry run.
         """
+        global _get_index  # noqa: PLW0603
         dry_run = "-n" in args
-        if dry_run:
-            for idx, url_obj in enumerate(url_list):
-                url = url_obj.url
-                parsed = urlparse(url)
-                filename = os.path.basename(parsed.path)
-                if not filename:
-                    filename = "index.html"
-                filename = unquote(filename)
-                print(f"[{idx}] {url} {filename}")
-            return url_list
+        time_fmt = getattr(settings, "time_format", "%Y%m%d%H%M%S")
+        template = getattr(settings, "filename_template", "{timestamp}_{filename}")
+        now_str = datetime.now().strftime(time_fmt)
 
-        failed_urls: list[URL] = []
-        for url_obj in url_list:
-            url = url_obj.url
+        current_index = _get_index
+
+        def build_filename(url: str, index: int) -> str:
             parsed = urlparse(url)
-            filename = os.path.basename(parsed.path)
+            host = parsed.hostname or "localhost"
+            path = parsed.path or "/"
+            dirname, _, filename = path.rpartition("/")
             if not filename:
                 filename = "index.html"
             filename = unquote(filename)
+            basename, dot, ext = filename.partition(".")
+            ext = ext if dot else ""
+            return template.format(
+                timestamp=now_str,
+                basename=basename,
+                ext=ext,
+                host=host,
+                dirname=dirname.lstrip("/"),
+                filename=filename,
+                index=index,
+            )
+
+        if dry_run:
+            for url in url_list:
+                fname = build_filename(url.url, current_index)
+                print(f"[{current_index}] {url.url} {fname}")
+                current_index += 1
+            # Do not update _global_get_index in dry run
+            return url_list
+
+        failed: list[URL] = []
+        for url in url_list:
+            fname = build_filename(url.url, current_index)
             try:
-                resp = url_obj.get()
+                resp = url.get()
                 resp.raise_for_status()
-                with open(filename, "wb") as f:
+                with open(fname, "wb") as f:
                     f.write(resp.content)
-                print(f"Saved {url} to {filename}")
             except Exception as e:
                 print(f"Failed to download {url}: {e}")
-                failed_urls.append(url_obj)
-        return failed_urls
+                failed.append(url)
+            current_index += 1
+        # Persist the updated index for future get command invocations
+        _get_index = current_index
+        return failed

@@ -2,6 +2,7 @@
 
 import shutil
 import textwrap
+from typing import Any
 
 from urload.commands.base import Command
 from urload.url import URL
@@ -22,7 +23,9 @@ class HelpCommand(Command):
         """Initialize HelpCommand with a command registry."""
         self.commands = commands
 
-    def run(self, args: list[str], url_list: list[URL]) -> list[URL]:
+    def run(
+        self, args: list[str], url_list: list[URL], settings: Any = None
+    ) -> list[URL]:
         """Show help for all commands or a specific command."""
         if not args:
             print("Available commands:")

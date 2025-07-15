@@ -3,6 +3,7 @@
 import re
 import textwrap
 from itertools import product
+from typing import Any
 
 from urload.commands.base import Command, CommandError
 from urload.url import URL
@@ -18,7 +19,9 @@ class AddCommand(Command):
     This command appends the specified URL to the shared URL list. Supports range expansion with [start-end] syntax.
     """)
 
-    def run(self, args: list[str], url_list: list[URL]) -> list[URL]:
+    def run(
+        self, args: list[str], url_list: list[URL], settings: Any = None
+    ) -> list[URL]:
         """Append a URL or URLs (with range expansion) to the list if provided."""
         if not args:
             raise CommandError("Error: No URL provided.")

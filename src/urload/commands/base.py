@@ -2,6 +2,7 @@
 
 from abc import ABC, abstractmethod
 
+from urload.settings import AppSettings
 from urload.url import URL
 
 
@@ -12,12 +13,15 @@ class Command(ABC):
     description: str
 
     @abstractmethod
-    def run(self, args: list[str], url_list: list[URL]) -> list[URL]:
+    def run(
+        self, args: list[str], url_list: list[URL], settings: AppSettings
+    ) -> list[URL]:
         """
-        Execute the command with the given arguments and URL list, returning the modified list.
+        Execute the command with the given arguments, URL list, and settings, returning the modified list.
 
         :param args: List of command-line arguments.
         :param url_list: List of URL objects to process.
+        :param settings: The AppSettings object.
         :return: A new list of URL objects after command execution.
         :raises CommandError: If a user-facing error occurs.
         """

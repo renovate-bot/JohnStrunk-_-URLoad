@@ -6,6 +6,7 @@ import pytest
 
 from urload.commands.get_option import GetOptionCommand
 from urload.commands.set_option import SetOptionCommand
+from urload.settings import AppSettings
 from urload.url import URL
 
 
@@ -24,15 +25,17 @@ def test_set_and_get_option(
     set_cmd = SetOptionCommand()
     get_cmd = GetOptionCommand()
     url_list: list[URL] = []
-    set_cmd.run(["filename_template=test_{filename}"], url_list)
-    get_cmd.run([], url_list)
+
+    settings = AppSettings()
+    set_cmd.run(["filename_template=test_{filename}"], url_list, settings)
+    get_cmd.run([], url_list, settings)
     out = capsys.readouterr().out
     assert "filename_template=test_{filename}" in out
     capsys.readouterr()  # clear
-    get_cmd.run(["filename_template"], url_list)
+    get_cmd.run(["filename_template"], url_list, settings)
     out = capsys.readouterr().out
     assert out.strip() == "filename_template=test_{filename}"
     with pytest.raises(Exception):
-        set_cmd.run(["notakey=foo"], url_list)
+        set_cmd.run(["notakey=foo"], url_list, settings)
     with pytest.raises(Exception):
-        get_cmd.run(["notakey"], url_list)
+        get_cmd.run(["notakey"], url_list, settings)

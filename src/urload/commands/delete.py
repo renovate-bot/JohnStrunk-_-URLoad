@@ -2,6 +2,7 @@
 
 import re
 import textwrap
+from typing import Any
 
 from urload.commands.base import Command, CommandError
 from urload.url import URL
@@ -17,7 +18,9 @@ class DeleteCommand(Command):
     This command removes a single URL by index or a range of URLs from the list.
     """)
 
-    def run(self, args: list[str], url_list: list[URL]) -> list[URL]:
+    def run(
+        self, args: list[str], url_list: list[URL], settings: Any = None
+    ) -> list[URL]:
         """Delete a URL or range of URLs by index."""
         if not args:
             raise CommandError("No index or range provided.")

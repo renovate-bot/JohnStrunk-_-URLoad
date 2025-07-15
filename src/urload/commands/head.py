@@ -1,6 +1,7 @@
 """Implements the 'head' command for URLoad."""
 
 import textwrap
+from typing import Any
 
 from urload.commands.base import Command, CommandError
 from urload.url import URL
@@ -16,7 +17,9 @@ class HeadCommand(Command):
     This command keeps only the first n URLs in the list, discarding the rest.
     """)
 
-    def run(self, args: list[str], url_list: list[URL]) -> list[URL]:
+    def run(
+        self, args: list[str], url_list: list[URL], settings: Any = None
+    ) -> list[URL]:
         """Keep the first n URLs from the list."""
         if not args:
             raise CommandError("No count provided.")

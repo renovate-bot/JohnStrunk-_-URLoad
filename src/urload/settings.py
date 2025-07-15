@@ -11,7 +11,8 @@ CONFIG_FILE = os.environ.get("URLOAD_CONFIG_FILE", "urload.toml")
 class AppSettings(BaseSettings):
     """Application settings for URLoad."""
 
-    filename_template: str = "{timestamp}_{filename}"
+    filename_template: str = "{index:04d}_{filename}"
+    time_format: str = "%Y%m%d%H%M%S"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
@@ -50,12 +51,3 @@ class AppSettings(BaseSettings):
             doc[key] = value
         with open(CONFIG_FILE, "w", encoding="utf-8") as f:
             f.write(tomlkit.dumps(doc, sort_keys=True))  # type: ignore
-
-
-# Singleton for active settings
-ACTIVE_SETTINGS: AppSettings = AppSettings.load()
-
-
-def get_active_settings() -> AppSettings:
-    """Return the active AppSettings singleton."""
-    return ACTIVE_SETTINGS

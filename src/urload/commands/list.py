@@ -1,6 +1,7 @@
 """Implements the 'list' command for URLoad."""
 
 import textwrap
+from typing import Any
 
 from urload.commands.base import Command, CommandError
 from urload.url import URL
@@ -18,7 +19,9 @@ class ListCommand(Command):
     If no range is specified, it prints all URLs.
     """)
 
-    def run(self, args: list[str], url_list: list[URL]) -> list[URL]:
+    def run(
+        self, args: list[str], url_list: list[URL], settings: Any = None
+    ) -> list[URL]:
         """
         Print each URL in the list with its index, or a specified range.
 

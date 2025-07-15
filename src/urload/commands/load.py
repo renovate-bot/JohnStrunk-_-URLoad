@@ -1,6 +1,7 @@
 """Load a list of URLs (with optional headers) from a text file."""
 
 import textwrap
+from typing import Any
 
 from urload.commands.base import Command, CommandError
 from urload.url import URL
@@ -18,7 +19,9 @@ class LoadCommand(Command):
         """
     )
 
-    def run(self, args: list[str], url_list: list[URL]) -> list[URL]:
+    def run(
+        self, args: list[str], url_list: list[URL], settings: Any = None
+    ) -> list[URL]:
         """
         Load URLs from a file, appending to the current list.
 
