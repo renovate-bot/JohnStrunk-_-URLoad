@@ -3,7 +3,7 @@
   // Renovate docs: https://docs.renovatebot.com/configuration-options/
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended", // Use recommended settings
+    "config:best-practices", // Use Renovate best-practices
     "docker:pinDigests", // Pin container digests
     "helpers:pinGitHubActionDigests", // Pin GitHub action digests
     ":enablePreCommit", // Enable updates to pre-commit repos
