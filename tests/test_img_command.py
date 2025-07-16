@@ -88,7 +88,7 @@ def test_img_command_handles_fetch_error(
     result = cmd.run([], url_list)
     assert result == []
     out = capsys.readouterr().out
-    assert "Error fetching https://fail.com" in out
+    assert "https://fail.com -> Error: fail" in out
 
 
 def test_img_command_relative_sources(monkeypatch: pytest.MonkeyPatch) -> None:

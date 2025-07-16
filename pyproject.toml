@@ -25,7 +25,7 @@ dev = [
 ]
 
 [project.scripts]
-urload = "urload.__main__:main"
+urload = "urload.main:main"
 
 [tool.coverage.html]
 directory = "htmlcov"

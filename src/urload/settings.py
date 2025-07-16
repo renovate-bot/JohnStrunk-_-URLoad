@@ -13,6 +13,7 @@ class AppSettings(BaseSettings):
 
     filename_template: str = "{index:04d}_{filename}"
     time_format: str = "%Y%m%d%H%M%S"
+    session_dir_num: int = 0  # Track highest session directory
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
@@ -41,7 +42,14 @@ class AppSettings(BaseSettings):
                 extract_value(v)
                 for k, v in dict(data).items()  # type: ignore
             }
-            return cls(**data_dict)
+            # Ensure session_dir_num is int
+            session_dir_num = 0
+            if "session_dir_num" in data_dict:
+                try:
+                    session_dir_num = int(data_dict.pop("session_dir_num"))
+                except Exception:
+                    session_dir_num = 0
+            return cls(session_dir_num=session_dir_num, **data_dict)
         return cls()
 
     def save(self) -> None:

@@ -6,7 +6,10 @@ command-line tool for scraping websites with tab completion and history support.
 """
 
 import atexit
-from collections.abc import Generator
+import os
+import re
+import sys
+from collections.abc import Generator, Iterable
 from typing import Any
 
 from prompt_toolkit import PromptSession
@@ -134,13 +137,36 @@ def build_command_objs() -> dict[str, Command]:
     return command_objs
 
 
+def get_next_numeric_dir(base_path: str) -> int:
+    """Return the next 4-digit numeric directory name in base_path, or 0 if none found."""
+    max_num = -1
+    for name in os.listdir(base_path):
+        if os.path.isdir(os.path.join(base_path, name)) and re.fullmatch(
+            r"\d{4}", name
+        ):
+            num = int(name)
+            max_num = max(max_num, num)
+    return max_num + 1
+
+
 def handle_user_input(
     user_input: str,
     command_objs: dict[str, Command],
     url_list: list[URL],
     settings: AppSettings,
 ) -> list[URL]:
-    """Process a single user input line and return the new url_list."""
+    """
+    Process a single user input line and return the new url_list.
+
+    Parses the input, executes the corresponding command if found, and returns the updated URL list.
+
+    :param user_input: The command line input from the user
+    :param command_objs: Dictionary of command names to Command objects
+    :param url_list: Current list of URLs
+    :param settings: Application settings
+    :return: The updated url_list after command execution
+    :raises SystemExit: If an 'exit' command or similar causes the CLI to exit.
+    """
     parts = user_input.strip().split()
     if not parts:
         return url_list
@@ -158,6 +184,37 @@ def handle_user_input(
         return url_list
 
 
+def execute_commands_from_source(
+    source: Iterable[str],
+    command_objs: dict[str, Command],
+    url_list: list[URL],
+    settings: AppSettings,
+) -> tuple[list[URL], bool]:
+    """
+    Execute commands from a file-like source, line by line.
+
+    Each line is processed as a command. If a SystemExit is raised (e.g., by an 'exit' command),
+    the function returns immediately.
+
+    :param source: Iterable of command strings to execute
+    :param command_objs: Dictionary of command names to Command objects
+    :param url_list: Current list of URLs
+    :param settings: Application settings
+    :return: Updated url_list and a boolean indicating if a SystemExit was raised
+    :raises SystemExit: If an 'exit' command or similar causes the CLI to exit.
+    """
+    for line in source:
+        stripped_line: str = line.strip()
+        if stripped_line:
+            try:
+                url_list = handle_user_input(
+                    stripped_line, command_objs, url_list, settings
+                )
+            except SystemExit:
+                return url_list, True
+    return url_list, False
+
+
 def main() -> None:
     """
     Entry point for the URLoad interactive CLI application.
@@ -166,22 +223,41 @@ def main() -> None:
     """
     url_list: list[URL] = []
     settings = AppSettings.load()
+
+    # Determine session directory
+    session_base = os.getcwd()
+    settings.session_dir_num = get_next_numeric_dir(session_base)
+
     command_objs = build_command_objs()
     completer = CommandCompleter(list(command_objs.keys()))
     history: InMemoryHistory = InMemoryHistory()
     session: PromptSession[Any] = PromptSession(completer=completer, history=history)
     atexit.register(settings.save)
     print("Welcome to URLoad! Type 'help' for commands.")
-    while True:
+    print(f"Current session directory: {settings.session_dir_num:04d}")
+
+    # Process command files if provided as arguments
+    exited = False
+    if len(sys.argv) > 1:
+        for filename in sys.argv[1:]:
+            try:
+                with open(filename, "r", encoding="utf-8") as f:
+                    url_list, exited = execute_commands_from_source(
+                        f, command_objs, url_list, settings
+                    )
+                    if exited:
+                        return
+            except Exception as e:
+                print(f"Error reading file '{filename}': {e}")
+
+    # Enter interactive mode
+    while not exited:
         try:
             prompt_str = f"URLoad ({len(url_list)}) > "
             user_input = session.prompt(prompt_str)
-            try:
-                url_list = handle_user_input(
-                    user_input, command_objs, url_list, settings
-                )
-            except SystemExit:
-                break
+            url_list, exited = execute_commands_from_source(
+                [user_input], command_objs, url_list, settings
+            )
         except (KeyboardInterrupt, EOFError):
             print("\nGoodbye!")
             break

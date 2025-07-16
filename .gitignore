@@ -6,6 +6,7 @@ __pycache__/
 /.ruff_cache/
 /.venv/
 /coverage.xml
+/dist/
 /htmlcov/
 
 # Configuration file

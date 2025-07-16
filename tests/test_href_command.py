@@ -88,7 +88,7 @@ def test_href_command_handles_fetch_error(
     result = cmd.run([], url_list)
     assert result == []
     out = capsys.readouterr().out
-    assert "Error fetching https://fail.com" in out
+    assert f"{url_list[0].url} -> Error: fail" in out
 
 
 def test_href_command_relative_links(monkeypatch: pytest.MonkeyPatch) -> None:

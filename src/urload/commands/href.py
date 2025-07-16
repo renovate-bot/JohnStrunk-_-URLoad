@@ -38,12 +38,14 @@ class HrefCommand(Command):
         new_urls: list[URL] = []
         for url in url_list:
             try:
+                print(f"{url.url} -> ", end="", flush=True)
                 resp = url.get()
                 resp.raise_for_status()
             except Exception as e:
-                print(f"Error fetching {url.url}: {e}")
+                print(f"Error: {e}")
                 continue
             soup = BeautifulSoup(resp.text, "html.parser")
+            found = 0
             for a in soup.find_all("a", href=True):
                 href = getattr(a, "get", None)
                 if not callable(href):
@@ -53,4 +55,6 @@ class HrefCommand(Command):
                     continue
                 full_url = urljoin(url.url, href_val)
                 new_urls.append(URL(full_url, headers={"Referer": url.url}))
+                found += 1
+            print(f"{found} found")
         return new_urls

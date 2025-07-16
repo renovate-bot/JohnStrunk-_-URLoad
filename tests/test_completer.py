@@ -4,7 +4,7 @@ import pytest
 from prompt_toolkit.completion import CompleteEvent
 from prompt_toolkit.document import Document
 
-from urload.__main__ import CommandCompleter
+from urload.main import CommandCompleter
 
 
 @pytest.fixture
