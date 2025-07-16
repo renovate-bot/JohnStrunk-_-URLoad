@@ -65,13 +65,16 @@ class GetCommand(Command):
             fname = build_filename(template, now_str, url.url, current_index)
             out_path = os.path.join(session_dir, fname)
             try:
+                print(f"[{current_index}] {url.url} -> {out_path}", end="", flush=True)
                 resp = url.get()
                 resp.raise_for_status()
                 with open(out_path, "wb") as f:
                     f.write(resp.content)
+                print(" [ok]")
             except Exception as e:
                 print(f"Failed to download {url}: {e}")
                 failed.append(url)
+                print(" [FAILED]")
             current_index += 1
         _get_index = current_index
         return failed
