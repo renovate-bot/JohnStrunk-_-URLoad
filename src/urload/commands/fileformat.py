@@ -17,7 +17,17 @@ class FileformatCommand(Command):
 
     With no arguments, prints the current filename template (used with str.format).
     With a single argument, sets the filename template (must be valid for str.format).
-    Valid template parameters: timestamp, basename, ext, host, dirname, filename, index
+
+    Example template: {index:04d}_{basename}.{ext}
+
+    Valid template parameters:
+    - basename: The base name of the URL (without path or query).
+    - dirname: The directory name of the URL.
+    - ext: The file extension of the URL.
+    - filename: The full filename (basename + ext).
+    - host: The host part of the URL.
+    - index: The index of the URL in the list (0-based).
+    - timestamp: The current timestamp (see: `timeformat` command).
     """
     )
 
