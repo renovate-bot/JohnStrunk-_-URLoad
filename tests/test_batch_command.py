@@ -4,7 +4,7 @@ import os
 import tempfile
 from typing import Any
 
-from urload import __main__
+from urload import main
 
 
 class DummyCommand:
@@ -43,16 +43,16 @@ def test_batch_file_exec(monkeypatch: Any) -> None:
     """Test that batch command files are executed before interactive mode."""
     dummy = DummyCommand()
     command_objs = {"dummy": dummy}
-    monkeypatch.setattr(__main__, "build_command_objs", lambda: command_objs)
-    monkeypatch.setattr(__main__, "AppSettings", DummySettings)
-    monkeypatch.setattr(__main__, "get_next_numeric_dir", lambda base: 0)  # type: ignore
+    monkeypatch.setattr(main, "build_command_objs", lambda: command_objs)
+    monkeypatch.setattr(main, "AppSettings", DummySettings)
+    monkeypatch.setattr(main, "get_next_numeric_dir", lambda base: 0)  # type: ignore
 
     with tempfile.NamedTemporaryFile("w+", delete=False) as tf:
         tf.write("dummy foo\ndummy bar\n\n")
         tf.flush()
         tfname = tf.name
 
-    monkeypatch.setattr(__main__, "sys", type("Sys", (), {"argv": ["prog", tfname]}))
+    monkeypatch.setattr(main, "sys", type("Sys", (), {"argv": ["prog", tfname]}))
 
     class DummySession:
         def __init__(self, *a: Any, **kw: Any) -> None:
@@ -61,13 +61,13 @@ def test_batch_file_exec(monkeypatch: Any) -> None:
         def prompt(self, *a: Any, **kw: Any) -> str:
             raise EOFError()
 
-    monkeypatch.setattr(__main__, "PromptSession", DummySession)
+    monkeypatch.setattr(main, "PromptSession", DummySession)
 
-    __main__.main()
+    main.main()
     os.unlink(tfname)
     assert dummy.calls == [(["foo"], []), (["bar"], [["foo"]])]
 
     def dummy_next_numeric_dir(base: str) -> int:
         return 0
 
-    monkeypatch.setattr(__main__, "get_next_numeric_dir", dummy_next_numeric_dir)
+    monkeypatch.setattr(main, "get_next_numeric_dir", dummy_next_numeric_dir)
