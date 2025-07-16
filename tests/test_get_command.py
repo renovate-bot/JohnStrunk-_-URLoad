@@ -75,8 +75,10 @@ def test_get_command_success(temp_cwd: str) -> None:
     cmd = GetCommand()
     result = cmd.run([], [url], settings)
     assert result == []
-    assert os.path.exists("file.txt")
-    with open("file.txt", "rb") as f:
+    session_dir = f"{settings.session_dir_num:04d}"
+    file_path = os.path.join(session_dir, "file.txt")
+    assert os.path.exists(file_path)
+    with open(file_path, "rb") as f:
         assert f.read() == b"hello"
 
 
@@ -88,7 +90,9 @@ def test_get_command_default_filename(temp_cwd: str) -> None:
     cmd = GetCommand()
     result = cmd.run([], [url], settings)
     assert result == []
-    assert os.path.exists("index.html")
+    session_dir = f"{settings.session_dir_num:04d}"
+    file_path = os.path.join(session_dir, "index.html")
+    assert os.path.exists(file_path)
 
 
 def test_get_command_failure(temp_cwd: str) -> None:
@@ -98,7 +102,9 @@ def test_get_command_failure(temp_cwd: str) -> None:
     settings = AppSettings()
     result = cmd.run([], [url], settings)
     assert result == [url]
-    assert not os.path.exists("file.txt")
+    session_dir = f"{settings.session_dir_num:04d}"
+    file_path = os.path.join(session_dir, "file.txt")
+    assert not os.path.exists(file_path)
 
 
 def test_get_command_partial_success(temp_cwd: str) -> None:
@@ -110,8 +116,11 @@ def test_get_command_partial_success(temp_cwd: str) -> None:
     cmd = GetCommand()
     result = cmd.run([], [url1, url2], settings)
     assert result == [url2]
-    assert os.path.exists("a.txt")
-    assert not os.path.exists("b.txt")
+    session_dir = f"{settings.session_dir_num:04d}"
+    file_path1 = os.path.join(session_dir, "a.txt")
+    file_path2 = os.path.join(session_dir, "b.txt")
+    assert os.path.exists(file_path1)
+    assert not os.path.exists(file_path2)
 
 
 def test_get_command_dry_run_prints_and_leaves_list_unchanged(
@@ -133,8 +142,9 @@ def test_get_command_dry_run_prints_and_leaves_list_unchanged(
     assert "[0] http://example.com/foo.txt foo.txt" in captured[0]
     assert "[1] http://example.com/bar/ index.html" in captured[1]
     # Ensure no files were created
-    assert not os.path.exists("foo.txt")
-    assert not os.path.exists("index.html")
+    session_dir = f"{settings.session_dir_num:04d}"
+    assert not os.path.exists(os.path.join(session_dir, "foo.txt"))
+    assert not os.path.exists(os.path.join(session_dir, "index.html"))
 
 
 def test_get_command_index_template(temp_cwd: str) -> None:
@@ -147,15 +157,19 @@ def test_get_command_index_template(temp_cwd: str) -> None:
     cmd = GetCommand()
     result = cmd.run([], [url1, url2], settings)
     assert result == []
-    assert os.path.exists("00_a.txt")
-    assert os.path.exists("01_b.txt")
-    with open("00_a.txt", "rb") as f:
+    session_dir = f"{settings.session_dir_num:04d}"
+    file_path1 = os.path.join(session_dir, "00_a.txt")
+    file_path2 = os.path.join(session_dir, "01_b.txt")
+    assert os.path.exists(file_path1)
+    assert os.path.exists(file_path2)
+    with open(file_path1, "rb") as f:
         assert f.read() == b"A"
-    with open("01_b.txt", "rb") as f:
+    with open(file_path2, "rb") as f:
         assert f.read() == b"B"
     url3 = make_url("http://example.com/c.txt", b"C")
     result = cmd.run([], [url3], settings)
     assert result == []
-    assert os.path.exists("02_c.txt")
-    with open("02_c.txt", "rb") as f:
+    file_path3 = os.path.join(session_dir, "02_c.txt")
+    assert os.path.exists(file_path3)
+    with open(file_path3, "rb") as f:
         assert f.read() == b"C"

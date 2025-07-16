@@ -6,6 +6,8 @@ command-line tool for scraping websites with tab completion and history support.
 """
 
 import atexit
+import os
+import re
 from collections.abc import Generator
 from typing import Any
 
@@ -134,6 +136,18 @@ def build_command_objs() -> dict[str, Command]:
     return command_objs
 
 
+def get_next_numeric_dir(base_path: str) -> int:
+    """Return the next 4-digit numeric directory name in base_path, or 0 if none found."""
+    max_num = -1
+    for name in os.listdir(base_path):
+        if os.path.isdir(os.path.join(base_path, name)) and re.fullmatch(
+            r"\d{4}", name
+        ):
+            num = int(name)
+            max_num = max(max_num, num)
+    return max_num + 1
+
+
 def handle_user_input(
     user_input: str,
     command_objs: dict[str, Command],
@@ -166,12 +180,18 @@ def main() -> None:
     """
     url_list: list[URL] = []
     settings = AppSettings.load()
+
+    # Determine session directory
+    session_base = os.getcwd()
+    settings.session_dir_num = get_next_numeric_dir(session_base)
+
     command_objs = build_command_objs()
     completer = CommandCompleter(list(command_objs.keys()))
     history: InMemoryHistory = InMemoryHistory()
     session: PromptSession[Any] = PromptSession(completer=completer, history=history)
     atexit.register(settings.save)
     print("Welcome to URLoad! Type 'help' for commands.")
+    print(f"Current session directory: {settings.session_dir_num:04d}")
     while True:
         try:
             prompt_str = f"URLoad ({len(url_list)}) > "

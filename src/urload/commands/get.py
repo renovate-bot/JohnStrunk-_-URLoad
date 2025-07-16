@@ -4,6 +4,7 @@ get - Download each URL in the list to a file in the current directory.
 Each file is named after the final component of the URL path, excluding query parameters.
 """
 
+import os
 import textwrap
 from datetime import datetime
 from urllib.parse import unquote, urlparse
@@ -44,6 +45,11 @@ class GetCommand(Command):
         template = getattr(settings, "filename_template", "{timestamp}_{filename}")
         now_str = datetime.now().strftime(time_fmt)
 
+        # Determine session directory
+        session_dir = f"{settings.session_dir_num:04d}"
+        if not os.path.exists(session_dir):
+            os.makedirs(session_dir)
+
         current_index = _get_index
 
         def build_filename(url: str, index: int) -> str:
@@ -71,21 +77,20 @@ class GetCommand(Command):
                 fname = build_filename(url.url, current_index)
                 print(f"[{current_index}] {url.url} {fname}")
                 current_index += 1
-            # Do not update _global_get_index in dry run
             return url_list
 
         failed: list[URL] = []
         for url in url_list:
             fname = build_filename(url.url, current_index)
+            out_path = os.path.join(session_dir, fname)
             try:
                 resp = url.get()
                 resp.raise_for_status()
-                with open(fname, "wb") as f:
+                with open(out_path, "wb") as f:
                     f.write(resp.content)
             except Exception as e:
                 print(f"Failed to download {url}: {e}")
                 failed.append(url)
             current_index += 1
-        # Persist the updated index for future get command invocations
         _get_index = current_index
         return failed

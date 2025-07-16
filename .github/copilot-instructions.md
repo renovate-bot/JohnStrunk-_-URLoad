@@ -2,7 +2,7 @@
 
 An interactive CLI tool for scraping websites.
 
-## Code style and structure
+## Code standards and style
 
 - Follow PEP 8 for Python code style.
 - Use type hints for function signatures.
@@ -14,6 +14,17 @@ An interactive CLI tool for scraping websites.
     `:raises CommandError:` for user-facing errors.
 - After any change, run `./hack/check.sh` to ensure code style and linting
   checks pass.
+- All formatting and typing errors must be fixed before submitting
+  code for review.
+- All code must be tested before submitting for review.
+
+## Code structure
+
+- The commands supported by the CLI should be implemented in the
+  `urload/commands` directory, with each command in its own file.
+- All commands must have a corresponding test in the `tests/commands`
+  directory.
+- Commands are registered in the `urload/commands/__main__.py` file.
 
 ## Dependency management
 
