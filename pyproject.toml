@@ -7,17 +7,22 @@ name = "urload"
 version = "0.1.0"
 description = "An interactive tool for downloading URLs"
 authors = [{ name = "John Strunk", email = "john.strunk@gmail.com" }]
-requires-python = ">=3.13.5"
+requires-python = ">=3.13"
 dependencies = [
-    "beautifulsoup4>=4.13.4",
-    "prompt-toolkit>=3.0.51",
-    "pydantic-settings>=2.10.1",
-    "requests>=2.32.4",
-    "tomlkit>=0.13.3",
+    "beautifulsoup4==4.13.4",
+    "prompt-toolkit==3.0.51",
+    "pydantic-settings==2.10.1",
+    "requests==2.32.4",
+    "tomlkit==0.13.3",
 ]
 
 [dependency-groups]
-dev = ["pyright==1.1.403", "pytest==8.4.1", "pytest-cov==6.2.1", "ruff>=0.12.3"]
+dev = [
+    "pyright==1.1.403",
+    "pytest==8.4.1",
+    "pytest-cov==6.2.1",
+    "ruff==0.12.3",
+]
 
 [project.scripts]
 urload = "urload.__main__:main"
@@ -53,6 +58,7 @@ source = ["src"] # Source code directories
 deprecateTypingAliases = true
 enableReachabilityAnalysis = true
 include = ["."]
+pythonPlatform = "All"
 reportUnnecessaryTypeIgnoreComment = true
 typeCheckingMode = "strict"
 useLibraryCodeForTypes = true
@@ -88,6 +94,17 @@ select = [
     "RUF",  # Ruff-specific
 ]
 pydocstyle.convention = "pep257"
+
+[tool.uv]
+add-bounds = "exact" # Add exact version bounds to dependencies
+required-environments = [
+    "sys_platform == 'darwin' and platform_machine == 'arm64'",
+    "sys_platform == 'darwin' and platform_machine == 'x86_64'",
+    "sys_platform == 'linux'",
+    "sys_platform == 'win32'",
+]
+
+resolution = "highest" # Use the highest version of dependencies
 
 [tool.uv.pip]
 universal = true
