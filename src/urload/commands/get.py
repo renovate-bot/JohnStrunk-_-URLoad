@@ -7,6 +7,7 @@ Each file is named after the final component of the URL path, excluding query pa
 import os
 import textwrap
 from datetime import datetime
+from pathlib import PurePath
 from urllib.parse import unquote, urlparse
 
 from urload.commands.base import Command
@@ -52,36 +53,16 @@ class GetCommand(Command):
 
         current_index = _get_index
 
-        def build_filename(url: str, index: int) -> str:
-            parsed = urlparse(url)
-            host = parsed.hostname or "localhost"
-            path = parsed.path or "/"
-            dirname, _, filename = path.rpartition("/")
-            if not filename:
-                filename = "index.html"
-            filename = unquote(filename)
-            basename, dot, ext = filename.partition(".")
-            ext = ext if dot else ""
-            return template.format(
-                timestamp=now_str,
-                basename=basename,
-                ext=ext,
-                host=host,
-                dirname=dirname.lstrip("/"),
-                filename=filename,
-                index=index,
-            )
-
         if dry_run:
             for url in url_list:
-                fname = build_filename(url.url, current_index)
+                fname = build_filename(template, now_str, url.url, current_index)
                 print(f"[{current_index}] {url.url} {fname}")
                 current_index += 1
             return url_list
 
         failed: list[URL] = []
         for url in url_list:
-            fname = build_filename(url.url, current_index)
+            fname = build_filename(template, now_str, url.url, current_index)
             out_path = os.path.join(session_dir, fname)
             try:
                 resp = url.get()
@@ -94,3 +75,50 @@ class GetCommand(Command):
             current_index += 1
         _get_index = current_index
         return failed
+
+
+def build_filename(template: str, time: str, url: str, index: int) -> str:
+    """
+    Build a filename for a downloaded URL using a template and metadata.
+
+    :param template: Filename template string with placeholders
+    :param time: Timestamp string for the download
+    :param url: The URL to be downloaded
+    :param index: The index of the URL in the list
+    :return: The formatted filename string
+    """
+    parsed = urlparse(url)
+    host = parsed.hostname or "localhost"
+    path = parsed.path or "/"
+    dirname, _, filename = path.rpartition("/")
+    if not filename:
+        filename = "index.html"
+    filename = unquote(filename.split("?")[0])
+    # Remove any path traversal from filename
+    filename = PurePath(filename).name
+    basename, dot, ext = filename.partition(".")
+    ext = ext if dot else ""
+    ext = ext.split("?")[0]
+    # Sanitize dirname: remove traversal and collapse slashes
+    dirname = unquote(dirname)
+    dirname = dirname.replace("\\", "/")
+    parts = [p for p in dirname.split("/") if p not in ("", ".", "..")]
+    safe_dirname = "/".join(parts)
+    # Never allow leading slash or traversal
+    safe_dirname = safe_dirname.lstrip("/")
+    # Compose the filename
+    result = template.format(
+        timestamp=time,
+        basename=basename,
+        ext=ext,
+        host=host,
+        dirname=safe_dirname,
+        filename=filename,
+        index=index,
+    )
+    # Final check: never allow traversal or leading slash
+    result = result.replace("\\", "/")
+    result = result.lstrip("/")
+    while ".." in result:
+        result = result.replace("..", "")
+    return result
