@@ -4,10 +4,22 @@ build-backend = "uv_build"
 
 [project]
 name = "urload"
-version = "0.1.0"
+version = "0.9.0"
 description = "An interactive tool for downloading URLs"
 authors = [{ name = "John Strunk", email = "john.strunk@gmail.com" }]
 requires-python = ">=3.13"
+readme = "README.md"
+classifiers = [  # https://pypi.org/classifiers/
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Utilities",
+]
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE"]
 dependencies = [
     "beautifulsoup4==4.13.4",
     "prompt-toolkit==3.0.51",
@@ -15,6 +27,9 @@ dependencies = [
     "requests==2.32.4",
     "tomlkit==0.13.3",
 ]
+
+[project.urls]
+Homepage = "https://github.com/JohnStrunk/URLoad"
 
 [dependency-groups]
 dev = [
