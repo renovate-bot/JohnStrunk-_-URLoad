@@ -24,7 +24,7 @@ dependencies = [
     "beautifulsoup4==4.13.4",
     "prompt-toolkit==3.0.51",
     "pydantic-settings==2.10.1",
-    "requests==2.32.4",
+    "requests==2.32.5",
     "tomlkit==0.13.3",
 ]
 
