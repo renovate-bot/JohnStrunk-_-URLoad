@@ -21,7 +21,7 @@ classifiers = [  # https://pypi.org/classifiers/
 license = "AGPL-3.0-or-later"
 license-files = ["LICENSE"]
 dependencies = [
-    "beautifulsoup4==4.13.4",
+    "beautifulsoup4==4.13.5",
     "prompt-toolkit==3.0.51",
     "pydantic-settings==2.10.1",
     "requests==2.32.5",
