@@ -22,7 +22,7 @@ license = "AGPL-3.0-or-later"
 license-files = ["LICENSE"]
 dependencies = [
     "beautifulsoup4==4.13.5",
-    "prompt-toolkit==3.0.51",
+    "prompt-toolkit==3.0.52",
     "pydantic-settings==2.10.1",
     "requests==2.32.5",
     "tomlkit==0.13.3",
