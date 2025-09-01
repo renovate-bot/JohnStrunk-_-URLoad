@@ -27,7 +27,7 @@ jobs:
 
       - name: Install uv
         # https://github.com/astral-sh/setup-uv
-        uses: astral-sh/setup-uv@4959332f0f014c5280e7eac8b70c90cb574c9f9b # v6.6.0
+        uses: astral-sh/setup-uv@557e51de59eb14aaaba2ed9621916900a91d50c6 # v6.6.1
 
       - name: Install pre-commit
         run: uv tool install pre-commit
@@ -84,7 +84,7 @@ jobs:
 
       - name: Install uv
         # https://github.com/astral-sh/setup-uv
-        uses: astral-sh/setup-uv@4959332f0f014c5280e7eac8b70c90cb574c9f9b # v6.6.0
+        uses: astral-sh/setup-uv@557e51de59eb14aaaba2ed9621916900a91d50c6 # v6.6.1
 
       - name: Install dependencies
         run: uv sync
@@ -112,7 +112,7 @@ jobs:
 
       - name: Install uv
         # https://github.com/astral-sh/setup-uv
-        uses: astral-sh/setup-uv@4959332f0f014c5280e7eac8b70c90cb574c9f9b # v6.6.0
+        uses: astral-sh/setup-uv@557e51de59eb14aaaba2ed9621916900a91d50c6 # v6.6.1
 
       - name: Set up Python
         # https://github.com/actions/setup-python
@@ -164,7 +164,7 @@ jobs:
 
       - name: Install uv
         # https://github.com/astral-sh/setup-uv
-        uses: astral-sh/setup-uv@4959332f0f014c5280e7eac8b70c90cb574c9f9b # v6.6.0
+        uses: astral-sh/setup-uv@557e51de59eb14aaaba2ed9621916900a91d50c6 # v6.6.1
 
       - name: Build release artifacts
         run: uv build
